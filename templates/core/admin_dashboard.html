@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_donors' %}">
+                            <i class="fas fa-users"></i> Manage Donors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_blood_inventory' %}">
+                            <i class="fas fa-tint"></i> Blood Inventory
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage_appointments' %}">
+                            <i class="fas fa-calendar-check"></i> Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notifications' %}">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Admin Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'view_donors' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                        <a href="{% url 'view_blood_inventory' %}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-tint"></i> View Inventory
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="alert alert-info">
+                <h5><i class="fas fa-user-shield"></i> Welcome, {{ user.get_full_name|default:user.username }}!</h5>
+                <p class="mb-0">As an administrator, you have full access to manage the blood bank system, users, and monitor system performance.</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Users</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_users_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Total Donors</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_donors_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Blood Units</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_blood_units|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tint fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Pending Verifications</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_verifications_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'view_donors' %}" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-users"></i><br>
+                                        Manage Users
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'view_blood_inventory' %}" class="btn btn-success btn-lg w-100">
+                                        <i class="fas fa-tint"></i><br>
+                                        Blood Inventory
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'manage_appointments' %}" class="btn btn-info btn-lg w-100">
+                                        <i class="fas fa-calendar-check"></i><br>
+                                        Appointments
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/admin/" class="btn btn-warning btn-lg w-100">
+                                        <i class="fas fa-cog"></i><br>
+                                        Django Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Overview -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar"></i> System Overview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>User Statistics</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Donors:</strong> {{ total_donors_count|default:0 }}</li>
+                                        <li><strong>Patients:</strong> {{ total_patients_count|default:0 }}</li>
+                                        <li><strong>Staff:</strong> {{ total_staff_count|default:0 }}</li>
+                                        <li><strong>Lab Technicians:</strong> {{ total_lab_techs_count|default:0 }}</li>
+                                        <li><strong>Administrators:</strong> {{ total_admins_count|default:0 }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Blood Bank Statistics</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Total Blood Units:</strong> {{ total_blood_units|default:0 }}</li>
+                                        <li><strong>Available Units:</strong> {{ available_blood_units|default:0 }}</li>
+                                        <li><strong>Low Stock Types:</strong> {{ low_stock_types_count|default:0 }}</li>
+                                        <li><strong>Out of Stock Types:</strong> {{ out_of_stock_types_count|default:0 }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-history"></i> Recent System Activity</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_activity %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Action</th>
+                                                <th>User</th>
+                                                <th>Details</th>
+                                                <th>Timestamp</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for activity in recent_activity %}
+                                            <tr>
+                                                <td>{{ activity.action }}</td>
+                                                <td>{{ activity.user.get_full_name|default:activity.user.username }}</td>
+                                                <td>{{ activity.details }}</td>
+                                                <td>{{ activity.timestamp|date:"M d, Y H:i" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No recent activity to display.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Verifications -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-user-check"></i> Pending Account Verifications</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if pending_verifications %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Full Name</th>
+                                                <th>User Type</th>
+                                                <th>Registration Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for user in pending_verifications %}
+                                            <tr>
+                                                <td>{{ user.username }}</td>
+                                                <td>{{ user.get_full_name|default:"Not provided" }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ user.get_user_type_display }}</span>
+                                                </td>
+                                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-success">Verify</a>
+                                                    <a href="#" class="btn btn-sm btn-outline-danger">Reject</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-check-circle fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No pending verifications.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Summary -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-user"></i> Profile Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</p>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                    <p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Role:</strong> System Administrator</p>
+                                    <p><strong>Account Status:</strong> 
+                                        {% if user.is_verified %}
+                                            <span class="badge bg-success">Verified</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending Verification</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Staff Dashboard - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'staff_dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage_appointments' %}">
+                            <i class="fas fa-calendar-check"></i> Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_blood_inventory' %}">
+                            <i class="fas fa-tint"></i> Blood Inventory
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_donors' %}">
+                            <i class="fas fa-users"></i> Donors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notifications' %}">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Staff Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'manage_appointments' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-calendar-plus"></i> Manage Appointments
+                        </a>
+                        <a href="{% url 'view_blood_inventory' %}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-tint"></i> View Inventory
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="alert alert-info">
+                <h5><i class="fas fa-user-md"></i> Welcome, {{ user.get_full_name|default:user.username }}!</h5>
+                <p class="mb-0">As hospital staff, you can manage appointments, view blood inventory, and coordinate with donors.</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Today's Appointments</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ today_appointments_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Pending Appointments</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_appointments_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Total Donors</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_donors_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Blood Units Available</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ blood_units_available|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tint fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'manage_appointments' %}" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-calendar-check"></i><br>
+                                        Manage Appointments
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'view_blood_inventory' %}" class="btn btn-success btn-lg w-100">
+                                        <i class="fas fa-tint"></i><br>
+                                        View Blood Inventory
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'view_donors' %}" class="btn btn-info btn-lg w-100">
+                                        <i class="fas fa-users"></i><br>
+                                        View Donors
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Appointments -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calendar-day"></i> Today's Appointments</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if today_appointments %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Donor Name</th>
+                                                <th>Blood Type</th>
+                                                <th>Appointment Time</th>
+                                                <th>Status</th>
+                                                <th>Phone</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in today_appointments %}
+                                            <tr>
+                                                <td>{{ appointment.donor.user.get_full_name|default:appointment.donor.user.username }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ appointment.donor.blood_type }}</span>
+                                                </td>
+                                                <td>{{ appointment.appointment_time|time:"H:i" }}</td>
+                                                <td>
+                                                    {% if appointment.status == 'scheduled' %}
+                                                        <span class="badge bg-info">Scheduled</span>
+                                                    {% elif appointment.status == 'completed' %}
+                                                        <span class="badge bg-success">Completed</span>
+                                                    {% elif appointment.status == 'cancelled' %}
+                                                        <span class="badge bg-danger">Cancelled</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning">{{ appointment.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ appointment.donor.user.phone|default:"N/A" }}</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                                    <a href="#" class="btn btn-sm btn-outline-success">Complete</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No appointments scheduled for today.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Blood Inventory -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tint"></i> Recent Blood Inventory</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if blood_inventory %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Blood Type</th>
+                                                <th>Units Available</th>
+                                                <th>Last Updated</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for unit in blood_inventory %}
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ unit.blood_type }}</span>
+                                                </td>
+                                                <td>{{ unit.units_available }}</td>
+                                                <td>{{ unit.last_updated|date:"M d, Y H:i" }}</td>
+                                                <td>
+                                                    {% if unit.status == 'available' %}
+                                                        <span class="badge bg-success">Available</span>
+                                                    {% elif unit.status == 'low' %}
+                                                        <span class="badge bg-warning">Low Stock</span>
+                                                    {% elif unit.status == 'out_of_stock' %}
+                                                        <span class="badge bg-danger">Out of Stock</span>
+                                                    {% else %}
+                                                        <span class="badge bg-info">{{ unit.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-tint fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No blood inventory data available.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Donors -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-users"></i> Recent Donors</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_donors %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Blood Type</th>
+                                                <th>Phone</th>
+                                                <th>Last Donation</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for donor in recent_donors %}
+                                            <tr>
+                                                <td>{{ donor.user.get_full_name|default:donor.user.username }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ donor.blood_type }}</span>
+                                                </td>
+                                                <td>{{ donor.user.phone|default:"N/A" }}</td>
+                                                <td>{{ donor.last_donation_date|date:"M d, Y"|default:"Never" }}</td>
+                                                <td>
+                                                    {% if donor.is_active %}
+                                                        <span class="badge bg-success">Active</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Inactive</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No donors registered yet.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Summary -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-user"></i> Profile Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</p>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                    <p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Role:</strong> Hospital Staff</p>
+                                    <p><strong>Account Status:</strong> 
+                                        {% if user.is_verified %}
+                                            <span class="badge bg-success">Verified</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending Verification</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

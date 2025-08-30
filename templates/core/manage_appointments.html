@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Appointments - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-calendar me-2"></i>Manage Appointments
+                </h2>
+                <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="">All Statuses</option>
+                                {% for status in statuses %}
+                                    <option value="{{ status.0 }}" {% if status.0 == request.GET.status %}selected{% endif %}>
+                                        {{ status.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_from" class="form-label">From Date</label>
+                            <input type="date" name="date_from" id="date_from" class="form-control" 
+                                   value="{{ request.GET.date_from }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_to" class="form-label">To Date</label>
+                            <input type="date" name="date_to" id="date_to" class="form-control" 
+                                   value="{{ request.GET.date_to }}">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-2"></i>Filter
+                            </button>
+                            <a href="{% url 'manage_appointments' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Appointments Table -->
+            {% if appointments %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Appointments ({{ appointments.paginator.count }} total)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Donor</th>
+                                        <th>Blood Bank</th>
+                                        <th>Date & Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                        <tr>
+                                            <td><strong>#{{ appointment.id }}</strong></td>
+                                            <td>
+                                                {% if appointment.donor %}
+                                                    {{ appointment.donor.user.get_full_name|default:appointment.donor.user.username }}
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ appointment.blood_bank.name }}</td>
+                                            <td>
+                                                <div>{{ appointment.appointment_date|date:"M d, Y" }}</div>
+                                                <small class="text-muted">{{ appointment.appointment_time|time:"H:i" }}</small>
+                                            </td>
+                                            <td>
+                                                {% if appointment.status == 'scheduled' %}
+                                                    <span class="badge bg-primary">Scheduled</span>
+                                                {% elif appointment.status == 'confirmed' %}
+                                                    <span class="badge bg-success">Confirmed</span>
+                                                {% elif appointment.status == 'completed' %}
+                                                    <span class="badge bg-info">Completed</span>
+                                                {% elif appointment.status == 'cancelled' %}
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                {% elif appointment.status == 'no_show' %}
+                                                    <span class="badge bg-warning">No Show</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ appointment.get_status_display }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-sm btn-outline-primary" 
+                                                            onclick="viewAppointment({{ appointment.id }})">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" 
+                                                            onclick="updateStatus({{ appointment.id }}, 'confirmed')">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-info" 
+                                                            onclick="updateStatus({{ appointment.id }}, 'completed')">
+                                                        <i class="fas fa-flag-checkered"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-warning" 
+                                                            onclick="updateStatus({{ appointment.id }}, 'no_show')">
+                                                        <i class="fas fa-user-times"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" 
+                                                            onclick="updateStatus({{ appointment.id }}, 'cancelled')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if appointments.has_other_pages %}
+                    <nav aria-label="Appointments pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if appointments.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ appointments.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in appointments.paginator.page_range %}
+                                {% if appointments.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > appointments.number|add:'-3' and num < appointments.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if appointments.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ appointments.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Appointments Found</h4>
+                    <p class="text-muted">
+                        No appointments match your current filters.
+                        Try adjusting your search criteria.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Appointment Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStatusForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="appointment_id" name="appointment_id">
+                    <input type="hidden" id="new_status" name="new_status">
+                    
+                    <div class="mb-3">
+                        <label for="status_notes" class="form-label">Status Notes (Optional)</label>
+                        <textarea name="status_notes" id="status_notes" class="form-control" rows="3" 
+                                  placeholder="Add any notes about this status change"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitStatusUpdate()">
+                    <i class="fas fa-save me-2"></i>Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewAppointment(appointmentId) {
+    // This would typically open a detailed view modal
+    alert('View appointment #' + appointmentId);
+}
+
+function updateStatus(appointmentId, newStatus) {
+    document.getElementById('appointment_id').value = appointmentId;
+    document.getElementById('new_status').value = newStatus;
+    
+    const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+    modal.show();
+}
+
+function submitStatusUpdate() {
+    const form = document.getElementById('updateStatusForm');
+    form.submit();
+}
+
+// Auto-fill date range for current month
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    const dateFromField = document.getElementById('date_from');
+    const dateToField = document.getElementById('date_to');
+    
+    if (dateFromField && !dateFromField.value) {
+        dateFromField.value = firstDay.toISOString().split('T')[0];
+    }
+    if (dateToField && !dateToField.value) {
+        dateToField.value = lastDay.toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}

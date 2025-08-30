@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-bell me-2"></i>Notifications
+                </h2>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" onclick="markAllAsRead()">
+                        <i class="fas fa-check-double me-2"></i>Mark All as Read
+                    </button>
+                    <button class="btn btn-outline-danger me-2" onclick="clearAllNotifications()">
+                        <i class="fas fa-trash me-2"></i>Clear All
+                    </button>
+                    {% if user.user_type == 'donor' %}
+                        <a href="{% url 'donor_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% elif user.user_type == 'patient' %}
+                        <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% elif user.user_type == 'staff' %}
+                        <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% elif user.user_type == 'lab_tech' %}
+                        <a href="{% url 'lab_tech_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% elif user.user_type == 'admin' %}
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Notification Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <select class="form-select" id="typeFilter" onchange="filterNotifications()">
+                                <option value="">All Types</option>
+                                <option value="blood_request">Blood Requests</option>
+                                <option value="appointment">Appointments</option>
+                                <option value="match">Donor-Patient Matches</option>
+                                <option value="test_result">Test Results</option>
+                                <option value="system">System Updates</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter" onchange="filterNotifications()">
+                                <option value="">All Statuses</option>
+                                <option value="unread">Unread</option>
+                                <option value="read">Read</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="priorityFilter" onchange="filterNotifications()">
+                                <option value="">All Priorities</option>
+                                <option value="high">High Priority</option>
+                                <option value="medium">Medium Priority</option>
+                                <option value="low">Low Priority</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                                <i class="fas fa-times me-2"></i>Reset Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications List -->
+            {% if notifications %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Notifications ({{ notifications.paginator.count }} total)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="notifications-list">
+                            {% for notification in notifications %}
+                                <div class="notification-item {% if not notification.is_read %}unread{% endif %}" 
+                                     data-type="{{ notification.notification_type }}" 
+                                     data-status="{% if notification.is_read %}read{% else %}unread{% endif %}"
+                                     data-priority="{{ notification.priority }}">
+                                    <div class="d-flex align-items-start">
+                                        <div class="notification-icon me-3">
+                                            {% if notification.notification_type == 'blood_request' %}
+                                                <i class="fas fa-tint fa-lg text-danger"></i>
+                                            {% elif notification.notification_type == 'appointment' %}
+                                                <i class="fas fa-calendar fa-lg text-primary"></i>
+                                            {% elif notification.notification_type == 'match' %}
+                                                <i class="fas fa-handshake fa-lg text-success"></i>
+                                            {% elif notification.notification_type == 'test_result' %}
+                                                <i class="fas fa-microscope fa-lg text-warning"></i>
+                                            {% elif notification.notification_type == 'system' %}
+                                                <i class="fas fa-cog fa-lg text-info"></i>
+                                            {% else %}
+                                                <i class="fas fa-bell fa-lg text-secondary"></i>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="notification-content flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="notification-title mb-0">
+                                                    {{ notification.title }}
+                                                </h6>
+                                                <div class="notification-meta">
+                                                    <small class="text-muted me-2">
+                                                        {{ notification.created_at|timesince }} ago
+                                                    </small>
+                                                    {% if notification.priority == 'high' %}
+                                                        <span class="badge bg-danger">High</span>
+                                                    {% elif notification.priority == 'medium' %}
+                                                        <span class="badge bg-warning">Medium</span>
+                                                    {% elif notification.priority == 'low' %}
+                                                        <span class="badge bg-success">Low</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="notification-message mb-2">
+                                                {{ notification.message }}
+                                            </p>
+                                            
+                                            {% if notification.related_url %}
+                                                <div class="notification-actions">
+                                                    <a href="{{ notification.related_url }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-external-link-alt me-1"></i>View Details
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="notification-actions ms-3">
+                                            {% if not notification.is_read %}
+                                                <form method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="notification_id" value="{{ notification.id }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Mark as Read">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-danger" 
+                                                    onclick="deleteNotification({{ notification.id }})" 
+                                                    title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if not forloop.last %}
+                                    <hr class="my-3">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if notifications.has_other_pages %}
+                    <nav aria-label="Notifications pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if notifications.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ notifications.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in notifications.paginator.page_range %}
+                                {% if notifications.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if notifications.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ notifications.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bell fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Notifications</h4>
+                    <p class="text-muted">
+                        You don't have any notifications at the moment.
+                        New notifications will appear here when they arrive.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function filterNotifications() {
+    const typeFilter = document.getElementById('typeFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const priorityFilter = document.getElementById('priorityFilter').value;
+    
+    const notifications = document.querySelectorAll('.notification-item');
+    
+    notifications.forEach(notification => {
+        let show = true;
+        
+        // Type filter
+        if (typeFilter && notification.dataset.type !== typeFilter) {
+            show = false;
+        }
+        
+        // Status filter
+        if (statusFilter && notification.dataset.status !== statusFilter) {
+            show = false;
+        }
+        
+        // Priority filter
+        if (priorityFilter && notification.dataset.priority !== priorityFilter) {
+            show = false;
+        }
+        
+        if (show) {
+            notification.style.display = 'block';
+        } else {
+            notification.style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('typeFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('priorityFilter').value = '';
+    
+    const notifications = document.querySelectorAll('.notification-item');
+    notifications.forEach(notification => {
+        notification.style.display = 'block';
+    });
+}
+
+function markAllAsRead() {
+    if (confirm('Mark all notifications as read?')) {
+        // This would typically make an AJAX call to mark all as read
+        const unreadNotifications = document.querySelectorAll('.notification-item.unread');
+        unreadNotifications.forEach(notification => {
+            notification.classList.remove('unread');
+            notification.dataset.status = 'read';
+        });
+        alert('All notifications marked as read!');
+    }
+}
+
+function clearAllNotifications() {
+    if (confirm('Are you sure you want to clear all notifications? This action cannot be undone.')) {
+        // This would typically make an AJAX call to clear all notifications
+        const notificationsList = document.querySelector('.notifications-list');
+        notificationsList.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-bell fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Notifications</h4>
+                <p class="text-muted">All notifications have been cleared.</p>
+            </div>
+        `;
+        alert('All notifications cleared!');
+    }
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Delete this notification?')) {
+        // This would typically make an AJAX call to delete the notification
+        const notificationItem = document.querySelector(`[data-notification-id="${notificationId}"]`);
+        if (notificationItem) {
+            notificationItem.remove();
+        }
+        alert('Notification deleted!');
+    }
+}
+
+// Auto-refresh notifications every 30 seconds
+setInterval(function() {
+    // This would typically make an AJAX call to check for new notifications
+    console.log('Checking for new notifications...');
+}, 30000);
+</script>
+
+<style>
+.notification-item {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.notification-item.unread {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-left: 4px solid #0d6efd;
+}
+
+.notification-icon {
+    flex-shrink: 0;
+}
+
+.notification-title {
+    color: #333;
+    font-weight: 600;
+}
+
+.notification-message {
+    color: #666;
+    line-height: 1.5;
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+}
+
+.notification-actions {
+    flex-shrink: 0;
+}
+
+.notification-actions .btn {
+    margin-left: 0.25rem;
+}
+</style>
+{% endblock %}

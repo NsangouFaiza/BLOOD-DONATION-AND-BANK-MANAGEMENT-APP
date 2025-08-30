@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP - Blood Bank Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-mobile-alt me-2"></i>Phone Verification
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-sms fa-3x text-success mb-3"></i>
+                        <h4>Enter OTP Code</h4>
+                        <p class="text-muted">
+                            We've sent a 6-digit verification code to your phone number:<br>
+                            <strong>{{ user.phone }}</strong>
+                        </p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.otp_code.id_for_label }}" class="form-label">
+                                <i class="fas fa-key me-2"></i>OTP Code
+                            </label>
+                            {{ form.otp_code }}
+                            {% if form.otp_code.errors %}
+                                <div class="text-danger small">{{ form.otp_code.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">Enter the 6-digit code sent to your phone</div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> The OTP code expires in 10 minutes. If you don't receive it, please check your phone number and try again.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check me-2"></i>Verify OTP
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-2">Didn't receive the OTP?</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <button class="btn btn-outline-secondary btn-sm w-100" onclick="resendOTP()">
+                                    <i class="fas fa-redo me-1"></i>Resend OTP
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-edit me-1"></i>Change Phone
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- OTP Information -->
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">
+                        <i class="fas fa-shield-alt me-2"></i>Why OTP Verification?
+                    </h5>
+                    <p class="card-text">
+                        OTP verification ensures that only the person with access to your phone number can create an account. 
+                        This adds an extra layer of security to protect your personal information and maintain the integrity of our blood bank system.
+                    </p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <i class="fas fa-lock fa-2x text-primary mb-2"></i>
+                            <h6>Security</h6>
+                            <p class="small">Protects against unauthorized account creation</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-user-check fa-2x text-success mb-2"></i>
+                            <h6>Verification</h6>
+                            <p class="small">Confirms your phone number is valid</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-shield-virus fa-2x text-warning mb-2"></i>
+                            <h6>Trust</h6>
+                            <p class="small">Builds trust in our blood donation community</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resendOTP() {
+    // In a real application, this would make an AJAX call to resend OTP
+    alert('OTP resend functionality would be implemented here. For now, please check your phone for the original OTP.');
+}
+
+// Auto-focus on OTP input
+document.addEventListener('DOMContentLoaded', function() {
+    const otpInput = document.querySelector('input[name="otp_code"]');
+    if (otpInput) {
+        otpInput.focus();
+    }
+});
+
+// Auto-format OTP input (only allow numbers)
+document.addEventListener('DOMContentLoaded', function() {
+    const otpInput = document.querySelector('input[name="otp_code"]');
+    if (otpInput) {
+        otpInput.addEventListener('input', function(e) {
+            // Remove any non-numeric characters
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limit to 6 digits
+            if (this.value.length > 6) {
+                this.value = this.value.slice(0, 6);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

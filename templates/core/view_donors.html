@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Available Donors - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-users me-2"></i>Available Donors
+                </h2>
+                <a href="{% url 'request_blood' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>New Blood Request
+                </a>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-tint me-2"></i>Blood Type: {{ blood_type }}
+                    </h5>
+                    <p class="card-text">
+                        These donors have compatible blood types and are available for donation.
+                        You can contact them directly or make a blood request through the system.
+                    </p>
+                </div>
+            </div>
+            
+            {% if donors %}
+                <div class="row">
+                    {% for donor in donors %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 donor-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar-placeholder me-3">
+                                            <i class="fas fa-user fa-2x text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="card-title mb-1">{{ donor.user.get_full_name|default:donor.user.username }}</h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ donor.user.city|default:"Location not specified" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">Blood Type</small>
+                                            <div class="fw-bold text-danger">{{ donor.blood_type }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Age</small>
+                                            <div class="fw-bold">{{ donor.age }} years</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">Last Donation</small>
+                                            <div class="fw-bold">
+                                                {% if donor.last_donation_date %}
+                                                    {{ donor.last_donation_date|date:"M d, Y" }}
+                                                {% else %}
+                                                    First time donor
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Status</small>
+                                            <div class="fw-bold">
+                                                {% if donor.is_eligible %}
+                                                    <span class="badge bg-success">Available</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Unavailable</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if donor.preferred_hospital %}
+                                        <div class="mb-3">
+                                            <small class="text-muted">Preferred Hospital</small>
+                                            <div class="fw-bold">{{ donor.preferred_hospital.name }}</div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'request_blood' %}?donor_id={{ donor.id }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-tint me-1"></i>Request Blood
+                                        </a>
+                                        <button class="btn btn-outline-secondary btn-sm" 
+                                                onclick="showDonorDetails({{ donor.id }})">
+                                            <i class="fas fa-info-circle me-1"></i>View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if donors.has_other_pages %}
+                    <nav aria-label="Donor pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if donors.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ donors.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in donors.paginator.page_range %}
+                                {% if donors.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > donors.number|add:'-3' and num < donors.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if donors.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ donors.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Donors Available</h4>
+                    <p class="text-muted">
+                        Currently, there are no available donors with blood type {{ blood_type }}.
+                        Please check back later or make a blood request through the system.
+                    </p>
+                    <a href="{% url 'request_blood' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Make Blood Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Donor Details Modal -->
+<div class="modal fade" id="donorDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Donor Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="donorDetailsContent">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="requestBloodBtn">
+                    <i class="fas fa-tint me-2"></i>Request Blood
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDonorDetails(donorId) {
+    // This would typically make an AJAX call to get donor details
+    // For now, we'll show a placeholder
+    document.getElementById('donorDetailsContent').innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i>
+            <p>Loading donor details...</p>
+        </div>
+    `;
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('donorDetailsModal'));
+    modal.show();
+    
+    // In a real application, you would make an AJAX call here
+    // to fetch the donor's detailed information
+}
+</script>
+{% endblock %}

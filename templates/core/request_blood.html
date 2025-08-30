@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Request Blood - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-tint"></i> Request Blood</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Blood Request Options</h6>
+                        <p class="mb-0">You can either request blood from hospital blood banks (paid service) or search for direct donor matches (free).</p>
+                    </div>
+
+                    <!-- Request Type Selection -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5>Choose Request Type:</h5>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="request_type" id="hospital_request" value="hospital" checked>
+                                <label class="btn btn-outline-primary" for="hospital_request">
+                                    <i class="fas fa-hospital"></i> Hospital Blood Bank
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="request_type" id="donor_match" value="donor">
+                                <label class="btn btn-outline-success" for="donor_match">
+                                    <i class="fas fa-users"></i> Direct Donor Match
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hospital Blood Bank Request Form -->
+                    <div id="hospital-form">
+                        <form method="post" id="blood-request-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_type" value="hospital">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.blood_type.id_for_label }}" class="form-label">
+                                        <i class="fas fa-tint"></i> Blood Type Required *
+                                    </label>
+                                    {{ form.blood_type }}
+                                    {% if form.blood_type.errors %}
+                                        <div class="text-danger">{{ form.blood_type.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.units_needed.id_for_label }}" class="form-label">
+                                        <i class="fas fa-calculator"></i> Units Needed *
+                                    </label>
+                                    {{ form.units_needed }}
+                                    {% if form.units_needed.errors %}
+                                        <div class="text-danger">{{ form.units_needed.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.urgency.id_for_label }}" class="form-label">
+                                        <i class="fas fa-exclamation-triangle"></i> Urgency Level *
+                                    </label>
+                                    {{ form.urgency }}
+                                    {% if form.urgency.errors %}
+                                        <div class="text-danger">{{ form.urgency.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.hospital.id_for_label }}" class="form-label">
+                                        <i class="fas fa-hospital"></i> Preferred Hospital *
+                                    </label>
+                                    {{ form.hospital }}
+                                    {% if form.hospital.errors %}
+                                        <div class="text-danger">{{ form.hospital.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.reason.id_for_label }}" class="form-label">
+                                    <i class="fas fa-sticky-note"></i> Reason for Request *
+                                </label>
+                                {{ form.reason }}
+                                {% if form.reason.errors %}
+                                    <div class="text-danger">{{ form.reason.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                    <i class="fas fa-comment"></i> Additional Notes
+                                </label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                    <div class="text-danger">{{ form.notes.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-money-bill"></i> Cost Information</h6>
+                                <p class="mb-0">Blood bank requests incur fees for testing, processing, and storage. Costs vary by hospital and blood type.</p>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane"></i> Submit Blood Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Direct Donor Match Form -->
+                    <div id="donor-form" style="display: none;">
+                        <form method="post" id="donor-match-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_type" value="donor">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="donor_blood_type" class="form-label">
+                                        <i class="fas fa-tint"></i> Blood Type Required *
+                                    </label>
+                                    <select name="donor_blood_type" id="donor_blood_type" class="form-select" required>
+                                        <option value="">Select Blood Type</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="donor_units_needed" class="form-label">
+                                        <i class="fas fa-calculator"></i> Units Needed *
+                                    </label>
+                                    <input type="number" name="donor_units_needed" id="donor_units_needed" 
+                                           class="form-control" min="1" max="10" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="donor_urgency" class="form-label">
+                                        <i class="fas fa-exclamation-triangle"></i> Urgency Level *
+                                    </label>
+                                    <select name="donor_urgency" id="donor_urgency" class="form-select" required>
+                                        <option value="">Select Urgency</option>
+                                        <option value="low">Low - Can wait a few days</option>
+                                        <option value="medium">Medium - Needed within 24-48 hours</option>
+                                        <option value="high">High - Emergency, needed immediately</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="donor_location" class="form-label">
+                                        <i class="fas fa-map-marker-alt"></i> Preferred Location
+                                    </label>
+                                    <input type="text" name="donor_location" id="donor_location" 
+                                           class="form-control" placeholder="City or region">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="donor_reason" class="form-label">
+                                    <i class="fas fa-sticky-note"></i> Reason for Request *
+                                </label>
+                                <textarea name="donor_reason" id="donor_reason" class="form-control" 
+                                          rows="3" placeholder="Please describe why you need blood" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="donor_contact" class="form-label">
+                                    <i class="fas fa-phone"></i> Contact Information *
+                                </label>
+                                <input type="text" name="donor_contact" id="donor_contact" 
+                                       class="form-control" placeholder="Phone number or email" required>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Direct Donor Matching</h6>
+                                <p class="mb-0">This service connects you directly with willing donors. No fees apply, but availability depends on donor willingness.</p>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-search"></i> Search for Donor Matches
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-hospital"></i> Hospital Blood Bank</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success"></i> Immediate availability</li>
+                                <li><i class="fas fa-check text-success"></i> Tested and safe blood</li>
+                                <li><i class="fas fa-check text-success"></i> Professional handling</li>
+                                <li><i class="fas fa-times text-danger"></i> Associated costs</li>
+                                <li><i class="fas fa-times text-danger"></i> Limited to hospital stock</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0"><i class="fas fa-users"></i> Direct Donor Match</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success"></i> No cost involved</li>
+                                <li><i class="fas fa-check text-success"></i> Direct communication</li>
+                                <li><i class="fas fa-check text-success"></i> Flexible scheduling</li>
+                                <li><i class="fas fa-times text-danger"></i> Availability not guaranteed</li>
+                                <li><i class="fas fa-times text-danger"></i> Requires donor coordination</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hospitalForm = document.getElementById('hospital-form');
+    const donorForm = document.getElementById('donor-form');
+    const requestTypeRadios = document.querySelectorAll('input[name="request_type"]');
+
+    function toggleForms() {
+        const selectedType = document.querySelector('input[name="request_type"]:checked').value;
+        
+        if (selectedType === 'hospital') {
+            hospitalForm.style.display = 'block';
+            donorForm.style.display = 'none';
+        } else {
+            hospitalForm.style.display = 'none';
+            donorForm.style.display = 'block';
+        }
+    }
+
+    requestTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleForms);
+    });
+
+    // Initialize form display
+    toggleForms();
+});
+</script>
+{% endblock %}

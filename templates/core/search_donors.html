@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Donors - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-search me-2"></i>Search Donors
+                </h2>
+                <div>
+                    {% if user.is_authenticated %}
+                        {% if user.user_type == 'donor' %}
+                            <a href="{% url 'donor_dashboard' %}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        {% elif user.user_type == 'patient' %}
+                            <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    <a href="{% url 'request_blood' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Make Blood Request
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="q" class="form-label">Search</label>
+                            <input type="text" name="q" id="q" class="form-control" 
+                                   placeholder="Search by name, username, or location" 
+                                   value="{{ query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="blood_type" class="form-label">Blood Type</label>
+                            <select name="blood_type" id="blood_type" class="form-select">
+                                <option value="">All Blood Types</option>
+                                {% for blood_type in blood_types %}
+                                    <option value="{{ blood_type.0 }}" {% if blood_type.0 == blood_type_filter %}selected{% endif %}>
+                                        {{ blood_type.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" name="city" id="city" class="form-control" 
+                                   placeholder="Enter city name" value="{{ city }}">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Clear Filters -->
+                    {% if query or blood_type_filter or city %}
+                        <div class="mt-3">
+                            <a href="{% url 'search_donors' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-times me-2"></i>Clear All Filters
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Search Results -->
+            {% if donors %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Search Results ({{ donors.paginator.count }} donors found)</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setViewMode('grid')">
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setViewMode('list')">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid View -->
+                <div id="gridView" class="view-mode">
+                    <div class="row">
+                        {% for donor in donors %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100 donor-card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="avatar-placeholder me-3">
+                                                <i class="fas fa-user fa-2x text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="card-title mb-1">{{ donor.user.get_full_name|default:donor.user.username }}</h6>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                                    {{ donor.user.city|default:"Location not specified" }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <small class="text-muted">Blood Type</small>
+                                                <div class="fw-bold text-danger">{{ donor.blood_type }}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Age</small>
+                                                <div class="fw-bold">{{ donor.age }} years</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <small class="text-muted">Last Donation</small>
+                                                <div class="fw-bold">
+                                                    {% if donor.last_donation_date %}
+                                                        {{ donor.last_donation_date|date:"M d, Y" }}
+                                                    {% else %}
+                                                        First time donor
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Status</small>
+                                                <div class="fw-bold">
+                                                    {% if donor.is_eligible %}
+                                                        <span class="badge bg-success">Available</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning">Unavailable</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if donor.preferred_hospital %}
+                                            <div class="mb-3">
+                                                <small class="text-muted">Preferred Hospital</small>
+                                                <div class="fw-bold">{{ donor.preferred_hospital.name }}</div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="d-grid gap-2">
+                                            {% if user.is_authenticated and user.user_type == 'patient' %}
+                                                <a href="{% url 'request_blood' %}?donor_id={{ donor.id }}" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-tint me-1"></i>Request Blood
+                                                </a>
+                                            {% endif %}
+                                            <button class="btn btn-outline-secondary btn-sm" 
+                                                    onclick="showDonorDetails({{ donor.id }})">
+                                                <i class="fas fa-info-circle me-1"></i>View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- List View -->
+                <div id="listView" class="view-mode" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Blood Type</th>
+                                            <th>Age</th>
+                                            <th>Location</th>
+                                            <th>Last Donation</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for donor in donors %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-placeholder me-2">
+                                                            <i class="fas fa-user text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-bold">{{ donor.user.get_full_name|default:donor.user.username }}</div>
+                                                            <small class="text-muted">{{ donor.user.username }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-danger">{{ donor.blood_type }}</span>
+                                                </td>
+                                                <td>{{ donor.age }} years</td>
+                                                <td>{{ donor.user.city|default:"Not specified" }}</td>
+                                                <td>
+                                                    {% if donor.last_donation_date %}
+                                                        {{ donor.last_donation_date|date:"M d, Y" }}
+                                                    {% else %}
+                                                        First time donor
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if donor.is_eligible %}
+                                                        <span class="badge bg-success">Available</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning">Unavailable</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        {% if user.is_authenticated and user.user_type == 'patient' %}
+                                                            <a href="{% url 'request_blood' %}?donor_id={{ donor.id }}" 
+                                                               class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-tint"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                        <button class="btn btn-sm btn-outline-secondary" 
+                                                                onclick="showDonorDetails({{ donor.id }})">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if donors.has_other_pages %}
+                    <nav aria-label="Donor search pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if donors.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ donors.previous_page_number }}&q={{ query }}&blood_type={{ blood_type_filter }}&city={{ city }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in donors.paginator.page_range %}
+                                {% if donors.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > donors.number|add:'-3' and num < donors.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}&q={{ query }}&blood_type={{ blood_type_filter }}&city={{ city }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if donors.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ donors.next_page_number }}&q={{ query }}&blood_type={{ blood_type_filter }}&city={{ city }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+                
+            {% elif query or blood_type_filter or city %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Donors Found</h4>
+                    <p class="text-muted">
+                        No donors match your search criteria.
+                        Try adjusting your search terms or filters.
+                    </p>
+                    <a href="{% url 'search_donors' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Clear Filters
+                    </a>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Search for Donors</h4>
+                    <p class="text-muted">
+                        Use the search form above to find compatible blood donors.
+                        You can search by name, blood type, or location.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Donor Details Modal -->
+<div class="modal fade" id="donorDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Donor Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="donorDetailsContent">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                {% if user.is_authenticated and user.user_type == 'patient' %}
+                    <button type="button" class="btn btn-primary" id="requestBloodBtn">
+                        <i class="fas fa-tint me-2"></i>Request Blood
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setViewMode(mode) {
+    const gridView = document.getElementById('gridView');
+    const listView = document.getElementById('listView');
+    
+    if (mode === 'grid') {
+        gridView.style.display = 'block';
+        listView.style.display = 'none';
+    } else {
+        gridView.style.display = 'none';
+        listView.style.display = 'block';
+    }
+}
+
+function showDonorDetails(donorId) {
+    // This would typically make an AJAX call to get donor details
+    document.getElementById('donorDetailsContent').innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i>
+            <p>Loading donor details...</p>
+        </div>
+    `;
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('donorDetailsModal'));
+    modal.show();
+    
+    // In a real application, you would make an AJAX call here
+    // to fetch the donor's detailed information
+}
+
+// Set default view mode to grid
+document.addEventListener('DOMContentLoaded', function() {
+    setViewMode('grid');
+});
+</script>
+{% endblock %}

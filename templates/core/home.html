@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FaiDrop - Blood Bank Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <div class="text-center mb-4">
+            <img src="{% static 'images/faidrop-logo.svg' %}" alt="FaiDrop Logo" height="120" class="mb-3 blood-drop-animation">
+        </div>
+        <h1 class="display-4 fw-bold mb-4">
+            FaiDrop
+        </h1>
+        <p class="lead mb-4">Connecting donors with patients in need. Saving lives through efficient blood management.</p>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <a href="{% url 'register' %}" class="btn btn-light btn-lg me-3">
+                    <i class="fas fa-user-plus me-2"></i>Register Now
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_donors' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-search me-2"></i>Find Donors
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">System Statistics</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h3 class="card-title">{{ total_donors }}</h3>
+                        <p class="card-text">Available Donors</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-user-injured fa-3x mb-3"></i>
+                        <h3 class="card-title">{{ total_patients }}</h3>
+                        <p class="card-text">Registered Patients</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-hospital fa-3x mb-3"></i>
+                        <h3 class="card-title">{{ total_hospitals }}</h3>
+                        <p class="card-text">Partner Hospitals</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-tint fa-3x mb-3"></i>
+                        <h3 class="card-title">{{ available_blood }}</h3>
+                        <p class="card-text">Blood Units Available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">1. Register</h5>
+                        <p class="card-text">Create your account as a donor or patient with OTP verification and national ID.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">2. Connect</h5>
+                        <p class="card-text">Patients find matching donors or request blood from hospital blood banks.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">3. Donate</h5>
+                        <p class="card-text">Donors schedule appointments and donate blood after health screening.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Types Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Join Our Community</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                        <h4 class="card-title">Become a Donor</h4>
+                        <p class="card-text">Help save lives by donating blood. Our system ensures your safety with comprehensive health screening.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>Easy registration with OTP verification</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Flexible appointment scheduling</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Health screening and testing</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Track your donation history</li>
+                        </ul>
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg mt-3">
+                            <i class="fas fa-user-plus me-2"></i>Register as Donor
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-injured fa-3x text-primary mb-3"></i>
+                        <h4 class="card-title">Need Blood?</h4>
+                        <p class="card-text">Find compatible donors quickly or request blood from our partner hospitals.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>Quick donor matching</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Direct communication with donors</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Hospital blood bank access</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Emergency blood requests</li>
+                        </ul>
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg mt-3">
+                            <i class="fas fa-user-plus me-2"></i>Register as Patient
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Section -->
+<section class="py-5 bg-danger text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">
+            <i class="fas fa-exclamation-triangle me-3"></i>Emergency Blood Need?
+        </h2>
+        <p class="lead mb-4">If you need blood urgently, our system can help you find donors quickly or access hospital blood banks.</p>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <a href="{% url 'search_donors' %}" class="btn btn-light btn-lg me-3">
+                    <i class="fas fa-search me-2"></i>Find Donors Now
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'request_blood' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-tint me-2"></i>Request Blood
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="mb-4">About Our System</h2>
+                <p class="lead">The Blood Bank Management System is designed to bridge the gap between blood donors and patients in need.</p>
+                <p>Our platform provides:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-shield-alt text-success me-2"></i>Secure user verification with OTP and national ID</li>
+                    <li><i class="fas fa-microscope text-success me-2"></i>Comprehensive health screening and testing</li>
+                    <li><i class="fas fa-hospital text-success me-2"></i>Integration with multiple hospitals and blood banks</li>
+                    <li><i class="fas fa-mobile-alt text-success me-2"></i>Easy-to-use interface for all user types</li>
+                    <li><i class="fas fa-chart-line text-success me-2"></i>Real-time blood inventory tracking</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-heartbeat fa-5x text-danger mb-3"></i>
+                        <h4>Save Lives Together</h4>
+                        <p>Every blood donation can save up to 3 lives. Join our community of lifesavers today.</p>
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

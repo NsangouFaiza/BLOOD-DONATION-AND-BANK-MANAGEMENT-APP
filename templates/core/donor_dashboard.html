@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}Donor Dashboard - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="sidebar p-3">
+                <h5 class="mb-3">
+                    <i class="fas fa-heart text-danger me-2"></i>Donor Menu
+                </h5>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{% url 'donor_dashboard' %}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{% url 'book_appointment' %}">
+                        <i class="fas fa-calendar me-2"></i>Book Appointment
+                    </a>
+                    <a class="nav-link" href="{% url 'donor_patient_matches' %}">
+                        <i class="fas fa-handshake me-2"></i>Patient Matches
+                    </a>
+                    <a class="nav-link" href="{% url 'user_profile' %}">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </a>
+                    <a class="nav-link" href="{% url 'notifications' %}">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="main-content">
+                <!-- Welcome Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-1">
+                            <i class="fas fa-heartbeat text-danger me-2"></i>Welcome, {{ donor.user.first_name }}!
+                        </h2>
+                        <p class="text-muted mb-0">Donor Dashboard - Track your blood donation journey</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-success fs-6">Blood Type: {{ donor.blood_type|default:"Not Set" }}</span>
+                        <br>
+                        <small class="text-muted">Status: 
+                            {% if donor.is_eligible %}
+                                <span class="text-success">Eligible</span>
+                            {% else %}
+                                <span class="text-warning">Pending Verification</span>
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card stats-card text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-tint fa-2x mb-2"></i>
+                                <h4 class="card-title">{{ total_donations }}</h4>
+                                <p class="card-text">Total Donations</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                                <h4 class="card-title">{{ appointments|length }}</h4>
+                                <p class="card-text">Upcoming Appointments</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-handshake fa-2x mb-2"></i>
+                                <h4 class="card-title">{{ matches|length }}</h4>
+                                <p class="card-text">Patient Matches</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <h4 class="card-title">
+                                    {% if donor.last_donation_date %}
+                                        {{ donor.last_donation_date|timesince }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </h4>
+                                <p class="card-text">Last Donation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <a href="{% url 'book_appointment' %}" class="btn btn-primary w-100">
+                                            <i class="fas fa-calendar-plus me-2"></i>Book New Appointment
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <a href="{% url 'donor_patient_matches' %}" class="btn btn-success w-100">
+                                            <i class="fas fa-search me-2"></i>View Patient Requests
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <a href="{% url 'user_profile' %}" class="btn btn-outline-primary w-100">
+                                            <i class="fas fa-user-edit me-2"></i>Update Profile
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Appointments -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-calendar me-2"></i>Upcoming Appointments
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if appointments %}
+                                    {% for appointment in appointments %}
+                                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                                            <div>
+                                                <h6 class="mb-1">{{ appointment.blood_bank.name }}</h6>
+                                                <p class="mb-1 text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    {{ appointment.appointment_date|date:"M d, Y" }}
+                                                </p>
+                                                <p class="mb-0 text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ appointment.appointment_time|time:"g:i A" }}
+                                                </p>
+                                            </div>
+                                            <span class="badge bg-{{ appointment.status|yesno:'success,warning,secondary,info' }}">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="text-center mt-3">
+                                        <a href="{% url 'book_appointment' %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-plus me-1"></i>Book More
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">No upcoming appointments</p>
+                                        <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+                                            <i class="fas fa-calendar-plus me-2"></i>Book Your First Appointment
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Patient Matches -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-handshake me-2"></i>Recent Patient Matches
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if matches %}
+                                    {% for match in matches %}
+                                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                                            <div>
+                                                <h6 class="mb-1">{{ match.patient.user.get_full_name }}</h6>
+                                                <p class="mb-1 text-muted">
+                                                    <i class="fas fa-tint me-1"></i>
+                                                    Needs: {{ match.blood_request.blood_type_needed }}
+                                                </p>
+                                                <p class="mb-0 text-muted">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    Urgency: {{ match.blood_request.get_urgency_level_display }}
+                                                </p>
+                                            </div>
+                                            <span class="badge bg-{{ match.status|yesno:'success,warning,secondary,info' }}">
+                                                {{ match.get_status_display }}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="text-center mt-3">
+                                        <a href="{% url 'donor_patient_matches' %}" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View All Matches
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">No patient matches yet</p>
+                                        <p class="small text-muted">Patients will be matched with you based on blood type compatibility</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donor Profile Summary -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>Profile Summary
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Name:</strong></td>
+                                                <td>{{ donor.user.get_full_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Blood Type:</strong></td>
+                                                <td>
+                                                    {% if donor.blood_type %}
+                                                        <span class="badge bg-danger">{{ donor.blood_type }}</span>
+                                                    {% else %}
+                                                        <span class="text-muted">Not set</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Age:</strong></td>
+                                                <td>{{ donor.age|default:"Not specified" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Weight:</strong></td>
+                                                <td>{{ donor.weight|default:"Not specified" }} kg</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Eligibility:</strong></td>
+                                                <td>
+                                                    {% if donor.is_eligible %}
+                                                        <span class="badge bg-success">Eligible</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning">Pending Verification</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Last Donation:</strong></td>
+                                                <td>
+                                                    {% if donor.last_donation_date %}
+                                                        {{ donor.last_donation_date|date:"M d, Y" }}
+                                                    {% else %}
+                                                        <span class="text-muted">Never donated</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total Donations:</strong></td>
+                                                <td>{{ total_donations }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Member Since:</strong></td>
+                                                <td>{{ donor.user.created_at|date:"M d, Y" }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'user_profile' %}" class="btn btn-primary">
+                                        <i class="fas fa-user-edit me-2"></i>Update Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

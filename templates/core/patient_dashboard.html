@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Dashboard - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'patient_dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'request_blood' %}">
+                            <i class="fas fa-tint"></i> Request Blood
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'search_donors' %}">
+                            <i class="fas fa-search"></i> Search Donors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'donor_patient_matches' %}">
+                            <i class="fas fa-handshake"></i> My Matches
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notifications' %}">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Patient Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'request_blood' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-plus"></i> New Blood Request
+                        </a>
+                        <a href="{% url 'search_donors' %}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-search"></i> Find Donors
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="alert alert-info">
+                <h5><i class="fas fa-user-injured"></i> Welcome, {{ user.get_full_name|default:user.username }}!</h5>
+                <p class="mb-0">As a patient, you can request blood from hospitals or find direct donor matches.</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Blood Requests</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ blood_requests_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tint fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Active Matches</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_matches_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-handshake fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Pending Requests</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_requests_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Total Matches</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_matches_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'request_blood' %}" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-tint"></i><br>
+                                        Request Blood
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'search_donors' %}" class="btn btn-success btn-lg w-100">
+                                        <i class="fas fa-search"></i><br>
+                                        Find Donors
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'donor_patient_matches' %}" class="btn btn-info btn-lg w-100">
+                                        <i class="fas fa-handshake"></i><br>
+                                        View Matches
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Blood Requests -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list"></i> Recent Blood Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if blood_requests %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Blood Type</th>
+                                                <th>Units Needed</th>
+                                                <th>Urgency</th>
+                                                <th>Status</th>
+                                                <th>Requested Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for request in blood_requests %}
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ request.blood_type }}</span>
+                                                </td>
+                                                <td>{{ request.units_needed }}</td>
+                                                <td>
+                                                    {% if request.urgency == 'high' %}
+                                                        <span class="badge bg-danger">High</span>
+                                                    {% elif request.urgency == 'medium' %}
+                                                        <span class="badge bg-warning">Medium</span>
+                                                    {% else %}
+                                                        <span class="badge bg-success">Low</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if request.status == 'pending' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elif request.status == 'approved' %}
+                                                        <span class="badge bg-success">Approved</span>
+                                                    {% elif request.status == 'rejected' %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% else %}
+                                                        <span class="badge bg-info">{{ request.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ request.created_at|date:"M d, Y" }}</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No blood requests yet.</p>
+                                    <a href="{% url 'request_blood' %}" class="btn btn-primary">Make Your First Request</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Donor Matches -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-handshake"></i> Recent Donor Matches</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if donor_matches %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Donor Name</th>
+                                                <th>Blood Type</th>
+                                                <th>Hospital</th>
+                                                <th>Match Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for match in donor_matches %}
+                                            <tr>
+                                                <td>{{ match.donor.user.get_full_name|default:match.donor.user.username }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ match.donor.blood_type }}</span>
+                                                </td>
+                                                <td>{{ match.donor.hospital.name }}</td>
+                                                <td>{{ match.created_at|date:"M d, Y" }}</td>
+                                                <td>
+                                                    {% if match.status == 'pending' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elif match.status == 'accepted' %}
+                                                        <span class="badge bg-success">Accepted</span>
+                                                    {% elif match.status == 'rejected' %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% else %}
+                                                        <span class="badge bg-info">{{ match.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">Contact</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No donor matches yet.</p>
+                                    <a href="{% url 'search_donors' %}" class="btn btn-success">Search for Donors</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Summary -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-user"></i> Profile Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</p>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                    <p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>National ID:</strong> {{ user.national_id|default:"Not provided" }}</p>
+                                    <p><strong>Account Status:</strong> 
+                                        {% if user.is_verified %}
+                                            <span class="badge bg-success">Verified</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending Verification</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Appointment - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-calendar-check"></i> Book Blood Donation Appointment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Appointment Information</h6>
+                        <p class="mb-0">Schedule your blood donation appointment at your preferred hospital. Please ensure you meet the eligibility criteria before booking.</p>
+                    </div>
+
+                    <!-- Eligibility Check -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Eligibility Requirements</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Requirements:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> Age 18-65 years</li>
+                                        <li><i class="fas fa-check text-success"></i> Weight > 50 kg</li>
+                                        <li><i class="fas fa-check text-success"></i> Good general health</li>
+                                        <li><i class="fas fa-check text-success"></i> No recent illnesses</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Time Requirements:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-clock text-info"></i> 56 days since last donation</li>
+                                        <li><i class="fas fa-clock text-info"></i> 24 hours since dental work</li>
+                                        <li><i class="fas fa-clock text-info"></i> 1 week since minor surgery</li>
+                                        <li><i class="fas fa-clock text-info"></i> 4 months since major surgery</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Form -->
+                    <form method="post" id="appointment-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.hospital.id_for_label }}" class="form-label">
+                                    <i class="fas fa-hospital"></i> Hospital * <span class="text-muted">(Choose your preferred location)</span>
+                                </label>
+                                {{ form.hospital }}
+                                {% if form.hospital.errors %}
+                                    <div class="text-danger">{{ form.hospital.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.appointment_date.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar"></i> Preferred Date * <span class="text-muted">(Minimum 24 hours notice)</span>
+                                </label>
+                                {{ form.appointment_date }}
+                                {% if form.appointment_date.errors %}
+                                    <div class="text-danger">{{ form.appointment_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.appointment_time.id_for_label }}" class="form-label">
+                                    <i class="fas fa-clock"></i> Preferred Time *
+                                </label>
+                                {{ form.appointment_time }}
+                                {% if form.appointment_time.errors %}
+                                    <div class="text-danger">{{ form.appointment_time.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.blood_type.id_for_label }}" class="form-label">
+                                    <i class="fas fa-tint"></i> Blood Type <span class="text-muted">(If known)</span>
+                                </label>
+                                {{ form.blood_type }}
+                                {% if form.blood_type.errors %}
+                                    <div class="text-danger">{{ form.blood_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.reason.id_for_label }}" class="form-label">
+                                <i class="fas fa-sticky-note"></i> Reason for Donation
+                            </label>
+                            {{ form.reason }}
+                            {% if form.reason.errors %}
+                                <div class="text-danger">{{ form.reason.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                <i class="fas fa-comment"></i> Additional Notes
+                            </label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Health Declaration -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-heartbeat"></i> Health Declaration</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="health_declaration" required>
+                                    <label class="form-check-label" for="health_declaration">
+                                        I confirm that I am in good health and meet the eligibility criteria for blood donation
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="no_medications" required>
+                                    <label class="form-check-label" for="no_medications">
+                                        I am not taking any medications that would prevent me from donating blood
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="no_risk_factors" required>
+                                    <label class="form-check-label" for="no_risk_factors">
+                                        I have no risk factors for blood-borne diseases
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="consent" required>
+                                    <label class="form-check-label" for="consent">
+                                        I consent to the blood donation process and understand the procedure
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" id="submit-btn" disabled>
+                                <i class="fas fa-calendar-plus"></i> Book Appointment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- What to Expect -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i class="fas fa-list"></i> What to Expect</h6>
+                        </div>
+                        <div class="card-body">
+                            <ol class="mb-0">
+                                <li>Registration and ID verification</li>
+                                <li>Health screening questionnaire</li>
+                                <li>Physical examination</li>
+                                <li>Blood type testing</li>
+                                <li>Blood donation (15-20 minutes)</li>
+                                <li>Rest and refreshments</li>
+                                <li>Post-donation care instructions</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Preparation Tips</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success"></i> Get adequate sleep the night before</li>
+                                <li><i class="fas fa-check text-success"></i> Eat a healthy meal 3-4 hours before</li>
+                                <li><i class="fas fa-check text-success"></i> Stay well hydrated</li>
+                                <li><i class="fas fa-check text-success"></i> Avoid fatty foods</li>
+                                <li><i class="fas fa-check text-success"></i> Bring valid ID</li>
+                                <li><i class="fas fa-check text-success"></i> Wear comfortable clothing</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="alert alert-warning mt-4">
+                <h6><i class="fas fa-phone"></i> Need to Cancel or Reschedule?</h6>
+                <p class="mb-0">If you need to cancel or reschedule your appointment, please contact the hospital at least 24 hours in advance. Contact information will be provided in your confirmation email.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const healthDeclaration = document.getElementById('health_declaration');
+    const noMedications = document.getElementById('no_medications');
+    const noRiskFactors = document.getElementById('no_risk_factors');
+    const consent = document.getElementById('consent');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function checkAllChecked() {
+        const allChecked = healthDeclaration.checked && 
+                          noMedications.checked && 
+                          noRiskFactors.checked && 
+                          consent.checked;
+        
+        submitBtn.disabled = !allChecked;
+    }
+
+    healthDeclaration.addEventListener('change', checkAllChecked);
+    noMedications.addEventListener('change', checkAllChecked);
+    noRiskFactors.addEventListener('change', checkAllChecked);
+    consent.addEventListener('change', checkAllChecked);
+
+    // Set minimum date to tomorrow
+    const appointmentDate = document.getElementById('id_appointment_date');
+    if (appointmentDate) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        appointmentDate.setAttribute('min', tomorrowStr);
+    }
+});
+</script>
+{% endblock %}

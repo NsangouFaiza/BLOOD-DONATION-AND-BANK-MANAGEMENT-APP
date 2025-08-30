@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donor-Patient Matches - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-handshake me-2"></i>Donor-Patient Matches
+                </h2>
+                <div>
+                    {% if user.user_type == 'donor' %}
+                        <a href="{% url 'donor_dashboard' %}" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% elif user.user_type == 'patient' %}
+                        <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'search_donors' %}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Search Donors
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Matches Summary -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center border-left-primary">
+                        <div class="card-body">
+                            <i class="fas fa-handshake fa-2x text-primary mb-2"></i>
+                            <h4 class="card-title">{{ matches.paginator.count }}</h4>
+                            <p class="card-text">Total Matches</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-left-success">
+                        <div class="card-body">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h4 class="card-title">
+                                {{ matches|dictsort:"status"|length|default:0 }}
+                            </h4>
+                            <p class="card-text">Accepted</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-left-warning">
+                        <div class="card-body">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h4 class="card-title">
+                                {{ matches|dictsort:"status"|length|default:0 }}
+                            </h4>
+                            <p class="card-text">Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-left-danger">
+                        <div class="card-body">
+                            <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                            <h4 class="card-title">
+                                {{ matches|dictsort:"status"|length|default:0 }}
+                            </h4>
+                            <p class="card-text">Declined</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Matches List -->
+            {% if matches %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Matches</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for match in matches %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 match-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <h6 class="card-title">
+                                                    {% if user.user_type == 'donor' %}
+                                                        <i class="fas fa-user-injured me-2 text-primary"></i>
+                                                        {{ match.patient.user.get_full_name|default:match.patient.user.username }}
+                                                    {% else %}
+                                                        <i class="fas fa-user me-2 text-success"></i>
+                                                        {{ match.donor.user.get_full_name|default:match.donor.user.username }}
+                                                    {% endif %}
+                                                </h6>
+                                                <span class="badge 
+                                                    {% if match.status == 'accepted' %}bg-success
+                                                    {% elif match.status == 'declined' %}bg-danger
+                                                    {% elif match.status == 'pending' %}bg-warning
+                                                    {% else %}bg-secondary{% endif %}">
+                                                    {{ match.get_status_display }}
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <small class="text-muted">Blood Type</small>
+                                                    <div class="fw-bold text-danger">
+                                                        {% if user.user_type == 'donor' %}
+                                                            {{ match.patient.blood_type_needed }}
+                                                        {% else %}
+                                                            {{ match.donor.blood_type }}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <small class="text-muted">Match Date</small>
+                                                    <div class="fw-bold">{{ match.created_at|date:"M d, Y" }}</div>
+                                                </div>
+                                            </div>
+                                            
+                                            {% if user.user_type == 'donor' %}
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Patient Condition</small>
+                                                    <div class="fw-bold">{{ match.patient.medical_condition|truncatechars:100 }}</div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Urgency Level</small>
+                                                    <div class="fw-bold">
+                                                        <span class="badge 
+                                                            {% if match.patient.urgency_level == 'high' %}bg-danger
+                                                            {% elif match.patient.urgency_level == 'medium' %}bg-warning
+                                                            {% else %}bg-success{% endif %}">
+                                                            {{ match.patient.get_urgency_level_display }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Donor Age</small>
+                                                    <div class="fw-bold">{{ match.donor.age }} years</div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Last Donation</small>
+                                                    <div class="fw-bold">
+                                                        {% if match.donor.last_donation_date %}
+                                                            {{ match.donor.last_donation_date|date:"M d, Y" }}
+                                                        {% else %}
+                                                            First time donor
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <!-- Response Section -->
+                                            {% if match.status == 'pending' %}
+                                                {% if user.user_type == 'donor' %}
+                                                    <div class="mb-3">
+                                                        <small class="text-muted">Patient Message</small>
+                                                        <div class="fw-bold">{{ match.patient_response|default:"No message yet" }}</div>
+                                                    </div>
+                                                    <div class="d-grid gap-2">
+                                                        <form method="post" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="match_id" value="{{ match.id }}">
+                                                            <input type="hidden" name="response_type" value="donor_response">
+                                                            <button type="submit" name="response" value="I accept this match" 
+                                                                    class="btn btn-success btn-sm w-100 mb-2">
+                                                                <i class="fas fa-check me-2"></i>Accept Match
+                                                            </button>
+                                                            <button type="submit" name="response" value="I decline this match" 
+                                                                    class="btn btn-danger btn-sm w-100">
+                                                                <i class="fas fa-times me-2"></i>Decline Match
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="mb-3">
+                                                        <small class="text-muted">Donor Response</small>
+                                                        <div class="fw-bold">{{ match.donor_response|default:"No response yet" }}</div>
+                                                    </div>
+                                                    <div class="d-grid gap-2">
+                                                        <form method="post" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="match_id" value="{{ match.id }}">
+                                                            <input type="hidden" name="response_type" value="patient_response">
+                                                            <button type="submit" name="response" value="I accept this match" 
+                                                                    class="btn btn-success btn-sm w-100 mb-2">
+                                                                <i class="fas fa-check me-2"></i>Accept Match
+                                                            </button>
+                                                            <button type="submit" name="response" value="I decline this match" 
+                                                                    class="btn btn-danger btn-sm w-100">
+                                                                <i class="fas fa-times me-2"></i>Decline Match
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                {% endif %}
+                                            {% elif match.status == 'accepted' %}
+                                                <div class="alert alert-success">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    <strong>Match Accepted!</strong>
+                                                    {% if user.user_type == 'donor' %}
+                                                        Contact the patient to arrange donation details.
+                                                    {% else %}
+                                                        Contact the donor to arrange donation details.
+                                                    {% endif %}
+                                                </div>
+                                            {% elif match.status == 'declined' %}
+                                                <div class="alert alert-danger">
+                                                    <i class="fas fa-times-circle me-2"></i>
+                                                    <strong>Match Declined</strong>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <!-- Contact Information -->
+                                            {% if match.status == 'accepted' %}
+                                                <div class="mt-3 pt-3 border-top">
+                                                    <h6 class="mb-2">Contact Information</h6>
+                                                    {% if user.user_type == 'donor' %}
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <small class="text-muted">Phone</small>
+                                                                <div class="fw-bold">{{ match.patient.user.phone|default:"Not provided" }}</div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <small class="text-muted">Hospital</small>
+                                                                <div class="fw-bold">{{ match.patient.preferred_hospital.name|default:"Not specified" }}</div>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <small class="text-muted">Phone</small>
+                                                                <div class="fw-bold">{{ match.donor.user.phone|default:"Not provided" }}</div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <small class="text-muted">Hospital</small>
+                                                                <div class="fw-bold">{{ match.donor.preferred_hospital.name|default:"Not specified" }}</div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if matches.has_other_pages %}
+                    <nav aria-label="Matches pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if matches.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ matches.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in matches.paginator.page_range %}
+                                {% if matches.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > matches.number|add:'-3' and num < matches.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if matches.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ matches.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Matches Found</h4>
+                    <p class="text-muted">
+                        {% if user.user_type == 'donor' %}
+                            You don't have any patient matches yet. 
+                            Patients will be matched with you based on blood type compatibility.
+                        {% else %}
+                            You don't have any donor matches yet. 
+                            Make a blood request to find compatible donors.
+                        {% endif %}
+                    </p>
+                    {% if user.user_type == 'patient' %}
+                        <a href="{% url 'request_blood' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Make Blood Request
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

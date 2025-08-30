@@ -1,0 +1,390 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lab Technician Dashboard - FaiDrop{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'lab_tech_dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'record_blood_test' %}">
+                            <i class="fas fa-flask"></i> Record Blood Test
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_donors' %}">
+                            <i class="fas fa-users"></i> View Donors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_blood_inventory' %}">
+                            <i class="fas fa-tint"></i> Blood Inventory
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notifications' %}">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Lab Technician Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'record_blood_test' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-plus"></i> New Blood Test
+                        </a>
+                        <a href="{% url 'view_donors' %}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-users"></i> View Donors
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="alert alert-info">
+                <h5><i class="fas fa-flask"></i> Welcome, {{ user.get_full_name|default:user.username }}!</h5>
+                <p class="mb-0">As a lab technician, you can perform blood tests, update donor profiles, and manage blood inventory.</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Pending Tests</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_tests_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-flask fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Tests Completed Today</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ today_tests_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Total Donors</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_donors_count|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Blood Units Available</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ blood_units_available|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tint fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'record_blood_test' %}" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-flask"></i><br>
+                                        Record Blood Test
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'view_donors' %}" class="btn btn-success btn-lg w-100">
+                                        <i class="fas fa-users"></i><br>
+                                        View Donors
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'view_blood_inventory' %}" class="btn btn-info btn-lg w-100">
+                                        <i class="fas fa-tint"></i><br>
+                                        Blood Inventory
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Blood Tests -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-clock"></i> Pending Blood Tests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if pending_tests %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Donor Name</th>
+                                                <th>Blood Type</th>
+                                                <th>Test Date</th>
+                                                <th>Status</th>
+                                                <th>Phone</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for test in pending_tests %}
+                                            <tr>
+                                                <td>{{ test.donor.user.get_full_name|default:test.donor.user.username }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ test.blood_type|default:"Not tested" }}</span>
+                                                </td>
+                                                <td>{{ test.test_date|date:"M d, Y" }}</td>
+                                                <td>
+                                                    {% if test.status == 'pending' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elif test.status == 'completed' %}
+                                                        <span class="badge bg-success">Completed</span>
+                                                    {% elif test.status == 'failed' %}
+                                                        <span class="badge bg-danger">Failed</span>
+                                                    {% else %}
+                                                        <span class="badge bg-info">{{ test.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ test.donor.user.phone|default:"N/A" }}</td>
+                                                <td>
+                                                    <a href="{% url 'record_blood_test' %}?test_id={{ test.id }}" class="btn btn-sm btn-outline-primary">Record Test</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-check-circle fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No pending blood tests.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Blood Tests -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-flask"></i> Recent Blood Tests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_tests %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Donor Name</th>
+                                                <th>Blood Type</th>
+                                                <th>Test Result</th>
+                                                <th>Test Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for test in recent_tests %}
+                                            <tr>
+                                                <td>{{ test.donor.user.get_full_name|default:test.donor.user.username }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ test.blood_type }}</span>
+                                                </td>
+                                                <td>
+                                                    {% if test.test_result == 'pass' %}
+                                                        <span class="badge bg-success">Pass</span>
+                                                    {% elif test.test_result == 'fail' %}
+                                                        <span class="badge bg-danger">Fail</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Pending</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ test.test_date|date:"M d, Y" }}</td>
+                                                <td>
+                                                    {% if test.status == 'completed' %}
+                                                        <span class="badge bg-success">Completed</span>
+                                                    {% elif test.status == 'pending' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% else %}
+                                                        <span class="badge bg-info">{{ test.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-flask fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No blood tests recorded yet.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Inventory Summary -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tint"></i> Blood Inventory Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if blood_inventory %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Blood Type</th>
+                                                <th>Units Available</th>
+                                                <th>Last Updated</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for unit in blood_inventory %}
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ unit.blood_type }}</span>
+                                                </td>
+                                                <td>{{ unit.units_available }}</td>
+                                                <td>{{ unit.last_updated|date:"M d, Y H:i" }}</td>
+                                                <td>
+                                                    {% if unit.status == 'available' %}
+                                                        <span class="badge bg-success">Available</span>
+                                                    {% elif unit.status == 'low' %}
+                                                        <span class="badge bg-warning">Low Stock</span>
+                                                    {% elif unit.status == 'out_of_stock' %}
+                                                        <span class="badge bg-danger">Out of Stock</span>
+                                                    {% else %}
+                                                        <span class="badge bg-info">{{ unit.status|title }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-tint fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No blood inventory data available.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Summary -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-user"></i> Profile Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</p>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                    <p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Role:</strong> Lab Technician</p>
+                                    <p><strong>Account Status:</strong> 
+                                        {% if user.is_verified %}
+                                            <span class="badge bg-success">Verified</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending Verification</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
