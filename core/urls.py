@@ -39,4 +39,12 @@ urlpatterns = [
     path('search-donors/', views.search_donors, name='search_donors'),
     path('user-profile/', views.user_profile, name='user_profile'),
     path('notifications/', views.notifications, name='notifications'),
+
+    # Community & Maps
+    path('campaigns/', views.campaigns, name='campaigns'),
+    path('hospitals-map/', views.hospitals_map, name='hospitals_map'),
+
+    # JSON APIs
+    path('api/hospitals/', views.api_hospitals, name='api_hospitals'),
+    path('api/inventory/', views.api_inventory, name='api_inventory'),
 ]

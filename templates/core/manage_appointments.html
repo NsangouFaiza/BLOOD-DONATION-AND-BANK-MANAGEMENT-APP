@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Manage Appointments - FaiDrop{% endblock %}
+{% block title %}Manage Appointments - LifeLink{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -106,23 +106,23 @@
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <button class="btn btn-sm btn-outline-primary" 
-                                                            onclick="viewAppointment({{ appointment.id }})">
+                                                            onclick="viewAppointment('{{ appointment.id }}')">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                     <button class="btn btn-sm btn-outline-success" 
-                                                            onclick="updateStatus({{ appointment.id }}, 'confirmed')">
+                                                            onclick="updateStatus('{{ appointment.id }}', 'confirmed')">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                     <button class="btn btn-sm btn-outline-info" 
-                                                            onclick="updateStatus({{ appointment.id }}, 'completed')">
+                                                            onclick="updateStatus('{{ appointment.id }}', 'completed')">
                                                         <i class="fas fa-flag-checkered"></i>
                                                     </button>
                                                     <button class="btn btn-sm btn-outline-warning" 
-                                                            onclick="updateStatus({{ appointment.id }}, 'no_show')">
+                                                            onclick="updateStatus('{{ appointment.id }}', 'no_show')">
                                                         <i class="fas fa-user-times"></i>
                                                     </button>
                                                     <button class="btn btn-sm btn-outline-danger" 
-                                                            onclick="updateStatus({{ appointment.id }}, 'cancelled')">
+                                                            onclick="updateStatus('{{ appointment.id }}', 'cancelled')">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </div>

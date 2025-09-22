@@ -52,6 +52,9 @@ class Hospital(models.Model):
     city = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
+    # Geolocation for maps and nearby search
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -159,7 +162,8 @@ class BloodUnit(models.Model):
         ('rejected', 'Rejected'),
     ]
     
-    unit_id = models.CharField(max_length=20, unique=True, default=uuid.uuid4)
+    # Use UUIDField to ensure proper storage and uniqueness of unit identifiers
+    unit_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     blood_type = models.CharField(max_length=3, choices=BLOOD_TYPES)
     donor = models.ForeignKey(Donor, on_delete=models.CASCADE, null=True, blank=True)
     blood_bank = models.ForeignKey(BloodBank, on_delete=models.CASCADE)
@@ -301,8 +305,39 @@ class Notification(models.Model):
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
     title = models.CharField(max_length=200)
     message = models.TextField()
+    priority = models.CharField(max_length=10, choices=[('low','Low'),('medium','Medium'),('high','High')], default='medium')
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.title}"
+
+# Community Campaigns for donation outreach
+class Campaign(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    hospital = models.ForeignKey(Hospital, on_delete=models.SET_NULL, null=True, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+# Transfusion reporting to track usage of blood units
+class TransfusionReport(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    blood_unit = models.ForeignKey(BloodUnit, on_delete=models.SET_NULL, null=True, blank=True)
+    hospital = models.ForeignKey(Hospital, on_delete=models.SET_NULL, null=True, blank=True)
+    outcome = models.CharField(max_length=100, choices=[
+        ('successful', 'Successful'),
+        ('complication', 'Complication'),
+        ('failed', 'Failed'),
+    ], default='successful')
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Transfusion for {self.patient.user.username} - {self.outcome}"

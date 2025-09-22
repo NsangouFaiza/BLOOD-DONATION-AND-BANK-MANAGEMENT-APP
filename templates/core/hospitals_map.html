@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hospitals Map - LifeLink{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  #map { height: 70vh; border-radius: 8px; }
+  .legend { background: #fff; padding: .5rem .75rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.1);} 
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>Hospitals & Blood Banks</h2>
+    <a class="btn btn-outline-primary" href="{% url 'campaigns' %}"><i class="fas fa-bullhorn me-2"></i>Campaigns</a>
+  </div>
+
+  <div id="map" class="mb-3"></div>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header"><strong>How to use</strong></div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li>Click a marker to view hospital details.</li>
+            <li>Ready stock per blood type is highlighted.</li>
+            <li>Use the table to quickly scan availability.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Real-time Stock by Hospital</strong>
+          <button id="refreshBtn" class="btn btn-sm btn-outline-secondary"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm" id="stockTable">
+              <thead>
+                <tr>
+                  <th>Hospital</th>
+                  <th>City</th>
+                  <th>Blood Type</th>
+                  <th>Ready</th>
+                  <th>Testing</th>
+                  <th>Reserved</th>
+                  <th>Used</th>
+                  <th>Expired</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+let map;
+let markersLayer;
+
+function initMap() {
+  map = L.map('map').setView([0.5, 9.4], 6); // Default view (adjust to your region)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+}
+
+async function fetchHospitals() {
+  const res = await fetch('{% url "api_hospitals" %}');
+  return (await res.json()).hospitals || [];
+}
+
+async function fetchInventory() {
+  const res = await fetch('{% url "api_inventory" %}');
+  return (await res.json()).inventory || [];
+}
+
+function buildPopup(h, invByType) {
+  let html = `<strong>${h.name}</strong><br/><small>${h.city}</small>`;
+  if (invByType && invByType.length) {
+    html += '<hr class="my-1"/><div><strong>Ready stock</strong></div>';
+    html += '<ul class="mb-0">';
+    invByType.forEach(it => { if (it.ready > 0) html += `<li>${it.blood_type}: <strong>${it.ready}</strong></li>`; });
+    html += '</ul>';
+  } else {
+    html += '<br/><em>No inventory data</em>';
+  }
+  return html;
+}
+
+function updateTable(inventory) {
+  const tbody = document.querySelector('#stockTable tbody');
+  tbody.innerHTML = '';
+  inventory.forEach(row => {
+    (row.by_blood_type || []).forEach(bt => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.hospital}</td>
+        <td>${row.city}</td>
+        <td>${bt.blood_type}</td>
+        <td>${bt.counts.ready || 0}</td>
+        <td>${bt.counts.testing || 0}</td>
+        <td>${bt.counts.reserved || 0}</td>
+        <td>${bt.counts.used || 0}</td>
+        <td>${bt.counts.expired || 0}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+async function refreshData() {
+  markersLayer.clearLayers();
+  const [hospitals, inventory] = await Promise.all([fetchHospitals(), fetchInventory()]);
+  const invByHospital = Object.fromEntries(inventory.map(i => [i.hospital_id, i]));
+
+  hospitals.forEach(h => {
+    if (h.latitude != null && h.longitude != null) {
+      const inv = invByHospital[h.id];
+      const marker = L.marker([h.latitude, h.longitude]);
+      marker.bindPopup(buildPopup(h, inv ? inv.by_blood_type : []));
+      markersLayer.addLayer(marker);
+    }
+  });
+  updateTable(inventory);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  refreshData();
+  document.getElementById('refreshBtn').addEventListener('click', refreshData);
+});
+</script>
+{% endblock %}

@@ -32,9 +32,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 # Custom admin site configuration
-ADMIN_SITE_HEADER = "FaiDrop Administration"
-ADMIN_SITE_TITLE = "FaiDrop Admin Portal"
-ADMIN_INDEX_TITLE = "Welcome to FaiDrop Administration"
+ADMIN_SITE_HEADER = "LifeLink Administration"
+ADMIN_SITE_TITLE = "LifeLink Admin Portal"
+ADMIN_INDEX_TITLE = "Welcome to LifeLink Administration"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -141,5 +141,6 @@ AUTH_USER_MODEL = 'core.User'
 
 # Login URLs
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
+# Use home as default redirect; per-role redirects are handled in views.user_login
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

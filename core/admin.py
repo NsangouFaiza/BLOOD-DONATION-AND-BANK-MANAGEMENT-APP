@@ -3,9 +3,9 @@ from django.contrib.auth.admin import UserAdmin
 from .models import *
 
 # Custom admin site configuration
-admin.site.site_header = "FaiDrop Administration"
-admin.site.site_title = "FaiDrop Admin Portal"
-admin.site.index_title = "Welcome to FaiDrop Administration"
+admin.site.site_header = "LifeLink Administration"
+admin.site.site_title = "LifeLink Admin Portal"
+admin.site.index_title = "Welcome to LifeLink Administration"
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -19,6 +19,20 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('user_type', 'phone', 'national_id', 'id_card_image', 'is_verified')
         }),
     )
+
+@admin.register(Campaign)
+class CampaignAdmin(admin.ModelAdmin):
+    list_display = ('title', 'hospital', 'location', 'start_date', 'end_date', 'is_active', 'created_at')
+    list_filter = ('is_active', 'start_date', 'end_date', 'hospital')
+    search_fields = ('title', 'location', 'description')
+    ordering = ('-start_date',)
+
+@admin.register(TransfusionReport)
+class TransfusionReportAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'blood_unit', 'hospital', 'outcome', 'created_at')
+    list_filter = ('outcome', 'hospital', 'created_at')
+    search_fields = ('patient__user__username', 'blood_unit__unit_id')
+    ordering = ('-created_at',)
     
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Blood Bank Info', {
@@ -28,7 +42,7 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
-    list_display = ('name', 'city', 'phone', 'email', 'is_active', 'created_at')
+    list_display = ('name', 'city', 'phone', 'email', 'latitude', 'longitude', 'is_active', 'created_at')
     list_filter = ('city', 'is_active', 'created_at')
     search_fields = ('name', 'city', 'phone', 'email')
     ordering = ('name',)
@@ -170,8 +184,8 @@ class OTPVerificationAdmin(admin.ModelAdmin):
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'notification_type', 'title', 'is_read', 'created_at')
-    list_filter = ('notification_type', 'is_read', 'created_at')
+    list_display = ('user', 'notification_type', 'priority', 'title', 'is_read', 'created_at')
+    list_filter = ('notification_type', 'priority', 'is_read', 'created_at')
     search_fields = ('user__username', 'title', 'message')
     ordering = ('-created_at',)
     

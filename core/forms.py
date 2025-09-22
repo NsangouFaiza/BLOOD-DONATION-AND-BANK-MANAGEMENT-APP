@@ -123,7 +123,6 @@ class BloodTestForm(forms.ModelForm):
     """Form for lab technicians to record blood test results"""
     class Meta:
         model = BloodTest
-        exclude = ['test_date']  # Exclude test_date as it's auto-populated
         fields = ('donor', 'test_type', 'status', 'results', 'notes')
         widgets = {
             'donor': forms.Select(attrs={'class': 'form-control'}),

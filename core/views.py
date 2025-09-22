@@ -227,13 +227,11 @@ def staff_dashboard(request):
     if not is_staff(request.user):
         return redirect('home')
     
-    appointments = Appointment.objects.filter(
-        blood_bank__hospital__bloodbank__user=request.user
-    ).order_by('-appointment_date')
-    
-    blood_units = BloodUnit.objects.filter(
-        blood_bank__hospital__bloodbank__user=request.user
-    ).order_by('-created_at')
+    # NOTE: The original queryset attempted to filter by a relationship chain
+    # `blood_bank__hospital__bloodbank__user` which does not exist in models.
+    # Until a proper ownership relation is modeled, show recent global data.
+    appointments = Appointment.objects.all().order_by('-appointment_date')
+    blood_units = BloodUnit.objects.all().order_by('-created_at')
     
     context = {
         'appointments': appointments[:10],
@@ -576,3 +574,74 @@ def notifications(request):
     }
     
     return render(request, 'core/notifications.html', context)
+
+# -------------------------
+# Community & Maps Views
+# -------------------------
+def campaigns(request):
+    """Public page to list active donation campaigns and updates."""
+    active_campaigns = Campaign.objects.filter(is_active=True).order_by('-start_date')
+    return render(request, 'core/campaigns.html', { 'campaigns': active_campaigns })
+
+
+def hospitals_map(request):
+    """Interactive map page to locate hospitals/blood banks and show stock levels."""
+    return render(request, 'core/hospitals_map.html')
+
+
+# -------------------------
+# JSON API Endpoints
+# -------------------------
+def api_hospitals(request):
+    """Return hospitals with geolocation for map display."""
+    hospitals = Hospital.objects.filter(is_active=True)
+    data = []
+    for h in hospitals:
+        data.append({
+            'id': h.id,
+            'name': h.name,
+            'city': h.city,
+            'phone': h.phone,
+            'email': h.email,
+            'latitude': float(h.latitude) if h.latitude is not None else None,
+            'longitude': float(h.longitude) if h.longitude is not None else None,
+        })
+    return JsonResponse({ 'hospitals': data })
+
+
+def api_inventory(request):
+    """Return real-time stock levels per hospital grouped by blood type and status."""
+    # Aggregate BloodUnit by hospital, blood_type, status
+    units = BloodUnit.objects.select_related('blood_bank__hospital')
+    stock = {}
+    for u in units:
+        hospital = u.blood_bank.hospital
+        hid = hospital.id
+        if hid not in stock:
+            stock[hid] = {
+                'hospital': hospital.name,
+                'city': hospital.city,
+                'latitude': float(hospital.latitude) if hospital.latitude is not None else None,
+                'longitude': float(hospital.longitude) if hospital.longitude is not None else None,
+                'by_blood_type': {},
+            }
+        bt = u.blood_type
+        status = u.status
+        stock[hid]['by_blood_type'].setdefault(bt, { 'ready': 0, 'testing': 0, 'reserved': 0, 'used': 0, 'expired': 0, 'collected': 0, 'rejected': 0 })
+        if status in stock[hid]['by_blood_type'][bt]:
+            stock[hid]['by_blood_type'][bt][status] += 1
+        else:
+            stock[hid]['by_blood_type'][bt][status] = 1
+    # Transform to list
+    result = []
+    for hid, info in stock.items():
+        by_type = []
+        for bt, counters in info['by_blood_type'].items():
+            total_ready = counters.get('ready', 0)
+            by_type.append({ 'blood_type': bt, 'counts': counters, 'ready': total_ready })
+        result.append({
+            'hospital_id': hid,
+            **{k: v for k, v in info.items() if k != 'by_blood_type'},
+            'by_blood_type': by_type,
+        })
+    return JsonResponse({ 'inventory': result })

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LifeLink Favicon">
+  <rect width="256" height="256" fill="white"/>
+  <path d="M128 36 C128 36, 84 96, 84 126 C84 156, 103 176, 128 176 C153 176, 172 156, 172 126 C172 96, 128 36, 128 36 Z" fill="#E53935"/>
+  <path d="M128 88 C121 81, 105 81, 99 93 C93 105, 100 120, 128 136 C156 120, 163 105, 157 93 C151 81, 135 81, 128 88 Z" fill="#1B5E20"/>
+</svg>

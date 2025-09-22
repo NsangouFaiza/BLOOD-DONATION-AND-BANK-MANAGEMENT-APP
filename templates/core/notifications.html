@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Notifications - FaiDrop{% endblock %}
+{% block title %}Notifications - LifeLink{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -153,7 +153,7 @@
                                                 </form>
                                             {% endif %}
                                             <button class="btn btn-sm btn-outline-danger" 
-                                                    onclick="deleteNotification({{ notification.id }})" 
+                                                    onclick="deleteNotification('{{ notification.id }}')" 
                                                     title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
