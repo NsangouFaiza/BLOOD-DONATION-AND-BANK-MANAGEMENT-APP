@@ -1,0 +1,21 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Donate blood illustration 1">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8F9FA"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg1)"/>
+  <g fill="none" stroke="#1D3557" stroke-width="4" opacity="0.15">
+    <circle cx="200" cy="150" r="120"/>
+    <circle cx="1000" cy="120" r="90"/>
+    <circle cx="950" cy="600" r="140"/>
+    <circle cx="250" cy="620" r="100"/>
+  </g>
+  <g transform="translate(350,160)">
+    <path d="M250 60 C350 -40, 520 120, 250 380 C -20 120, 150 -40, 250 60 Z" fill="#E63946"/>
+    <circle cx="250" cy="60" r="22" fill="#FFFFFF" opacity="0.9"/>
+    <text x="250" y="480" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" fill="#1D3557" font-weight="700">Donate Blood</text>
+    <text x="250" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#495057">Your donation can save up to 3 lives</text>
+  </g>
+</svg>

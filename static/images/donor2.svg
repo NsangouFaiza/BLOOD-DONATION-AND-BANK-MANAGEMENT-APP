@@ -1,0 +1,24 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Donate blood illustration 2">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F8F9FA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg2)"/>
+  <g opacity="0.08" fill="#1D3557">
+    <rect x="80" y="80" width="200" height="120" rx="12"/>
+    <rect x="1000" y="120" width="140" height="90" rx="12"/>
+    <rect x="300" y="620" width="240" height="120" rx="12"/>
+    <rect x="820" y="560" width="200" height="130" rx="12"/>
+  </g>
+  <g transform="translate(300,140)">
+    <path d="M300 40 C380 -40, 550 110, 300 360 C 50 110, 220 -40, 300 40 Z" fill="#E63946"/>
+    <g transform="translate(230,120)">
+      <rect x="-30" y="-60" width="60" height="120" rx="12" fill="#FFFFFF"/>
+      <circle cx="0" cy="-80" r="14" fill="#E63946"/>
+    </g>
+    <text x="300" y="460" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#1D3557" font-weight="700">Every drop counts</text>
+    <text x="300" y="498" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#495057">Give blood. Give life.</text>
+  </g>
+</svg>

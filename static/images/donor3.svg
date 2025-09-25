@@ -1,0 +1,24 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Donate blood illustration 3">
+  <defs>
+    <linearGradient id="bg3" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8F9FA"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg3)"/>
+  <g opacity="0.06" fill="#2A9D8F">
+    <circle cx="150" cy="140" r="80"/>
+    <circle cx="1080" cy="180" r="60"/>
+    <circle cx="1040" cy="640" r="100"/>
+    <circle cx="220" cy="660" r="70"/>
+  </g>
+  <g transform="translate(260,160)">
+    <path d="M340 60 C430 -30, 600 120, 340 380 C 80 120, 250 -30, 340 60 Z" fill="#E63946"/>
+    <g transform="translate(290,160)">
+      <path d="M0 -40 C 30 -60, 60 -20, 0 50 C -60 -20, -30 -60, 0 -40 Z" fill="#FFFFFF"/>
+      <circle cx="0" cy="-55" r="10" fill="#E63946"/>
+    </g>
+    <text x="340" y="460" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#1D3557" font-weight="700">Be a lifesaver</text>
+    <text x="340" y="498" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#495057">Healthy adults can donate every 56 days</text>
+  </g>
+</svg>

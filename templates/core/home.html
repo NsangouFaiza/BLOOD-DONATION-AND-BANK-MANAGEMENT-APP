@@ -62,6 +62,60 @@
     </div>
 </section>
 
+<!-- Education: About Blood Donation -->
+<section class="py-5 bg-app-white">
+    <div class="container">
+        <h2 class="h3 text-center mb-4">Learn about blood donation</h2>
+        <div class="row g-3 g-md-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle me-2 text-tertiary-green"></i>
+                            <h6 class="mb-0">Who can donate?</h6>
+                        </div>
+                        <ul class="mb-0 small text-muted">
+                            <li>Healthy adults from 18 to 65 years old</li>
+                            <li>Minimum weight 50 kg (110 lb)</li>
+                            <li>Normal hemoglobin levels</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-clock me-2 text-secondary-blue"></i>
+                            <h6 class="mb-0">How often?</h6>
+                        </div>
+                        <p class="mb-0 small text-muted">Whole blood every 56 days. Platelets every 7–14 days depending on local guidance.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-ban me-2 text-accent-red"></i>
+                            <h6 class="mb-0">Not today if...</h6>
+                        </div>
+                        <ul class="mb-0 small text-muted">
+                            <li>You have a fever or flu-like symptoms</li>
+                            <li>You recently had surgery or a major dental procedure</li>
+                            <li>You are pregnant or recently postpartum</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'register' %}" class="btn btn-secondary-blue me-2"><i class="fas fa-user-plus me-2"></i>Get Started</a>
+            <a href="{% url 'search_donors' %}" class="btn btn-accent-red"><i class="fas fa-search me-2"></i>Find Donors</a>
+        </div>
+    </div>
+</section>
+
 <!-- How it works (concise) -->
 <section class="py-5 bg-app-white">
     <div class="container">

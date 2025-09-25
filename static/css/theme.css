@@ -79,7 +79,7 @@ h1, h2, h3, h4, h5, h6 {
   filter: brightness(0.9);
 }
 
-/* Add your images to static/images as donor1.jpg, donor2.jpg, donor3.jpg */
+/* Slideshow images (JPG/PNG banners) placed under static/images */
 @keyframes donorSlideshow {
   0% { background-image: url('../images/donor1.jpg'); }
   33% { background-image: url('../images/donor2.jpg'); }

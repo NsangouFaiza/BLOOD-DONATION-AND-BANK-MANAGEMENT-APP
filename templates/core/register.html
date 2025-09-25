@@ -7,14 +7,14 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header text-white text-center" style="background-color:#1D3557;">
                     <h3 class="mb-0">
                         <i class="fas fa-user-plus me-2"></i>Create Your Account
                     </h3>
                 </div>
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <p class="text-muted">Join our blood bank community and help save lives</p>
+                        <p class="text-muted">Create your account to request or donate blood. It only takes a minute.</p>
                     </div>
 
                     <form method="post" enctype="multipart/form-data">
@@ -73,7 +73,7 @@
                                 {% if form.phone.errors %}
                                     <div class="text-danger small">{{ form.phone.errors.0 }}</div>
                                 {% endif %}
-                                <div class="form-text">Format: +1234567890 or 1234567890</div>
+                                <div class="form-text">Use the international format, e.g. +237650000000</div>
                             </div>
                             
                             <div class="col-md-6 mb-3">
@@ -84,6 +84,7 @@
                                 {% if form.national_id.errors %}
                                     <div class="text-danger small">{{ form.national_id.errors.0 }}</div>
                                 {% endif %}
+                                <div class="form-text">We use this only for verification. It stays private.</div>
                             </div>
                         </div>
 
@@ -128,7 +129,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-secondary-blue btn-lg">
                                 <i class="fas fa-user-plus me-2"></i>Create Account
                             </button>
                         </div>
@@ -155,7 +156,7 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
-                    <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                    <i class="fas fa-heart fa-3x text-accent-red mb-3"></i>
                     <h5 class="card-title">Donor</h5>
                     <p class="card-text">Register as a blood donor to help save lives. You'll need to complete health screening before becoming eligible.</p>
                 </div>
@@ -165,7 +166,7 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
-                    <i class="fas fa-user-injured fa-3x text-primary mb-3"></i>
+                    <i class="fas fa-user-injured fa-3x text-secondary-blue mb-3"></i>
                     <h5 class="card-title">Patient</h5>
                     <p class="card-text">Register as a patient to request blood from donors or access hospital blood banks.</p>
                 </div>
@@ -175,7 +176,7 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
-                    <i class="fas fa-hospital fa-3x text-success mb-3"></i>
+                    <i class="fas fa-hospital fa-3x text-tertiary-green mb-3"></i>
                     <h5 class="card-title">Staff</h5>
                     <p class="card-text">For blood bank staff, lab technicians, and administrators. Contact system admin for access.</p>
                 </div>
