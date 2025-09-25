@@ -1,0 +1,110 @@
+:root {
+  --accent-red: #E63946;      /* Primary accent - blood red */
+  --secondary-blue: #1D3557;  /* Secondary - health blue */
+  --tertiary-green: #2A9D8F;  /* Tertiary - hope green */
+  --bg-light: #F8F9FA;        /* Light gray background */
+  --bg-white: #FFFFFF;        /* Pure white background */
+  --title-color: #212529;     /* Deep black for titles */
+  --body-color: #495057;      /* Dark gray for body text */
+}
+
+/* Base colors */
+body {
+  background-color: var(--bg-light);
+  color: var(--body-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--title-color);
+}
+
+/* Navbar */
+.bg-health-blue {
+  background-color: var(--secondary-blue) !important;
+}
+
+/* Buttons */
+.btn-accent-red {
+  background-color: var(--accent-red) !important;
+  border-color: var(--accent-red) !important;
+  color: #fff !important;
+}
+.btn-accent-red:hover {
+  filter: brightness(0.95);
+}
+
+.btn-secondary-blue {
+  background-color: var(--secondary-blue) !important;
+  border-color: var(--secondary-blue) !important;
+  color: #fff !important;
+}
+.btn-secondary-blue:hover {
+  filter: brightness(1.1);
+}
+
+.btn-tertiary-green {
+  background-color: var(--tertiary-green) !important;
+  border-color: var(--tertiary-green) !important;
+  color: #fff !important;
+}
+.btn-tertiary-green:hover {
+  filter: brightness(1.05);
+}
+
+/* Section backgrounds */
+.bg-app-white {
+  background-color: var(--bg-white) !important;
+}
+
+/* Icon helper tints */
+.text-accent-red { color: var(--accent-red) !important; }
+.text-secondary-blue { color: var(--secondary-blue) !important; }
+.text-tertiary-green { color: var(--tertiary-green) !important; }
+
+/* Animated background for donor page */
+.animated-bg {
+  position: relative;
+  overflow: hidden;
+  min-height: 100%;
+}
+.animated-bg::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -2;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: donorSlideshow 24s infinite;
+  filter: brightness(0.9);
+}
+
+/* Add your images to static/images as donor1.jpg, donor2.jpg, donor3.jpg */
+@keyframes donorSlideshow {
+  0% { background-image: url('../images/donor1.jpg'); }
+  33% { background-image: url('../images/donor2.jpg'); }
+  66% { background-image: url('../images/donor3.jpg'); }
+  100% { background-image: url('../images/donor1.jpg'); }
+}
+
+/* Subtle overlay to improve contrast */
+.animated-bg::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgba(29,53,87,0.35), rgba(29,53,87,0.15));
+}
+
+/* Card/Button emphasis per palette guidance */
+.card .text-muted { color: #6c757d !important; }
+.card .text-primary { color: var(--secondary-blue) !important; }
+.card .text-danger { color: var(--accent-red) !important; }
+.card .text-success { color: var(--tertiary-green) !important; }
+
+/* Header, Buttons mapping suggestion
+   - Header: secondary blue
+   - Get Started: secondary blue
+   - Find Donors / Request Blood: accent red
+   - Register / success actions: tertiary green
+*/

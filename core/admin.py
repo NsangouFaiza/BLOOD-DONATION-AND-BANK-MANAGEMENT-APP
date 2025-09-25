@@ -16,7 +16,7 @@ class CustomUserAdmin(UserAdmin):
     
     fieldsets = UserAdmin.fieldsets + (
         ('Blood Bank Info', {
-            'fields': ('user_type', 'phone', 'national_id', 'id_card_image', 'is_verified')
+            'fields': ('user_type', 'phone', 'national_id', 'is_verified')
         }),
     )
 
@@ -33,12 +33,6 @@ class TransfusionReportAdmin(admin.ModelAdmin):
     list_filter = ('outcome', 'hospital', 'created_at')
     search_fields = ('patient__user__username', 'blood_unit__unit_id')
     ordering = ('-created_at',)
-    
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Blood Bank Info', {
-            'fields': ('user_type', 'phone', 'national_id', 'id_card_image')
-        }),
-    )
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):

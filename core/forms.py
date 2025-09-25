@@ -20,13 +20,6 @@ class UserRegistrationForm(UserCreationForm):
             'placeholder': 'Enter your national ID'
         })
     )
-    id_card_image = forms.ImageField(
-        required=True,
-        widget=forms.FileInput(attrs={
-            'class': 'form-control',
-            'accept': 'image/*'
-        })
-    )
     user_type = forms.ChoiceField(
         choices=User.USER_TYPES,
         widget=forms.Select(attrs={
@@ -36,7 +29,7 @@ class UserRegistrationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'phone', 'national_id', 'id_card_image', 'user_type', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone', 'national_id', 'user_type', 'password1', 'password2')
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Choose a username'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'}),

@@ -19,7 +19,6 @@ class User(AbstractUser):
     ])
     city = models.CharField(max_length=100, blank=True, null=True)
     national_id = models.CharField(max_length=20, unique=True)
-    id_card_image = models.ImageField(upload_to='id_cards/', null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

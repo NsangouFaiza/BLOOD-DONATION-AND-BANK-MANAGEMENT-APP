@@ -18,11 +18,13 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- FaiDrop Branding CSS -->
     <link rel="stylesheet" href="{% static 'css/faidrop.css' %}">
+    <!-- Application Theme (Palette) -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-health-blue">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'images/lifelink-logo.png' %}" alt="LifeLink Logo" height="40" class="me-2">

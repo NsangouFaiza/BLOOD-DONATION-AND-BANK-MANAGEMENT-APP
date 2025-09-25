@@ -5,16 +5,16 @@
 
 {% block content %}
 <!-- Minimal Hero -->
-<section class="py-5 bg-dark text-white">
+<section class="py-5 bg-app-white">
     <div class="container py-5 text-center">
         <img src="{% static 'images/lifelink-logo.png' %}" alt="LifeLink Logo" height="96" class="mb-3">
         <h1 class="display-5 fw-bold mb-2">LifeLink</h1>
         <p class="lead mb-4">Connecting donors and patients. Simple. Fast. Life‑saving.</p>
         <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-            <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+            <a href="{% url 'register' %}" class="btn btn-secondary-blue btn-lg">
                 <i class="fas fa-user-plus me-2"></i>Get Started
             </a>
-            <a href="{% url 'search_donors' %}" class="btn btn-outline-light btn-lg">
+            <a href="{% url 'search_donors' %}" class="btn btn-accent-red btn-lg">
                 <i class="fas fa-search me-2"></i>Find Donors
             </a>
         </div>
@@ -29,7 +29,7 @@
                 <a href="{% url 'search_donors' %}" class="text-decoration-none">
                     <div class="card h-100 text-center">
                         <div class="card-body py-4">
-                            <i class="fas fa-search fa-2x text-primary mb-2"></i>
+                            <i class="fas fa-search fa-2x text-secondary-blue mb-2"></i>
                             <h5 class="mb-1">Search Donors</h5>
                             <p class="text-muted mb-0">Find a compatible donor near you.</p>
                         </div>
@@ -40,7 +40,7 @@
                 <a href="{% url 'request_blood' %}" class="text-decoration-none">
                     <div class="card h-100 text-center">
                         <div class="card-body py-4">
-                            <i class="fas fa-tint fa-2x text-danger mb-2"></i>
+                            <i class="fas fa-tint fa-2x text-accent-red mb-2"></i>
                             <h5 class="mb-1">Request Blood</h5>
                             <p class="text-muted mb-0">Raise a request to hospitals and donors.</p>
                         </div>
@@ -51,7 +51,7 @@
                 <a href="{% url 'register' %}" class="text-decoration-none">
                     <div class="card h-100 text-center">
                         <div class="card-body py-4">
-                            <i class="fas fa-user-plus fa-2x text-success mb-2"></i>
+                            <i class="fas fa-user-plus fa-2x text-tertiary-green mb-2"></i>
                             <h5 class="mb-1">Register</h5>
                             <p class="text-muted mb-0">Join as a donor or a patient in minutes.</p>
                         </div>
@@ -63,27 +63,27 @@
 </section>
 
 <!-- How it works (concise) -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-app-white">
     <div class="container">
         <h2 class="h3 text-center mb-4">How it works</h2>
         <div class="row text-center g-3 g-md-4">
             <div class="col-md-4">
                 <div class="p-3">
-                    <i class="fas fa-user-check fa-2x text-primary mb-2"></i>
+                    <i class="fas fa-user-check fa-2x text-secondary-blue mb-2"></i>
                     <h6 class="mb-1">1. Create account</h6>
                     <p class="text-muted small mb-0">Verify and set your donor or patient profile.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-3">
-                    <i class="fas fa-filter fa-2x text-primary mb-2"></i>
+                    <i class="fas fa-filter fa-2x text-secondary-blue mb-2"></i>
                     <h6 class="mb-1">2. Match</h6>
                     <p class="text-muted small mb-0">We match by blood group and location.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-3">
-                    <i class="fas fa-hand-holding-heart fa-2x text-primary mb-2"></i>
+                    <i class="fas fa-hand-holding-heart fa-2x text-secondary-blue mb-2"></i>
                     <h6 class="mb-1">3. Donate/Receive</h6>
                     <p class="text-muted small mb-0">Coordinate and complete the life‑saving act.</p>
                 </div>

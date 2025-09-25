@@ -97,17 +97,6 @@
                                     <div class="text-danger small">{{ form.user_type.errors.0 }}</div>
                                 {% endif %}
                             </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.id_card_image.id_for_label }}" class="form-label">
-                                    <i class="fas fa-image me-2"></i>National ID Card Image
-                                </label>
-                                {{ form.id_card_image }}
-                                {% if form.id_card_image.errors %}
-                                    <div class="text-danger small">{{ form.id_card_image.errors.0 }}</div>
-                                {% endif %}
-                                <div class="form-text">Upload a clear image of your national ID card</div>
-                            </div>
                         </div>
 
                         <div class="row">
