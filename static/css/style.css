@@ -153,6 +153,64 @@
     color: #721c24;
 }
 
+/* Special styling for OTP messages */
+.alert.otp-message,
+.alert:has(.otp-countdown) {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: 2px solid #20c997;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 0.5rem 1rem rgba(40, 167, 69, 0.3);
+    animation: otpPulse 2s ease-in-out infinite alternate;
+    position: relative;
+    overflow: visible;
+}
+
+.alert.otp-message::before {
+    content: "🔐";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.otp-countdown {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    animation: countdownBlink 1s ease-in-out infinite;
+}
+
+@keyframes otpPulse {
+    0% {
+        box-shadow: 0 0.5rem 1rem rgba(40, 167, 69, 0.3);
+    }
+    100% {
+        box-shadow: 0 0.75rem 1.5rem rgba(40, 167, 69, 0.5);
+    }
+}
+
+@keyframes countdownBlink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0.7;
+    }
+}
+
 /* Navigation styling */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);

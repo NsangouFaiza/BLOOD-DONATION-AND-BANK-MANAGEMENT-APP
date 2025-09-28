@@ -6,8 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0003_auto_20250924_0609'),
-        ('core', '0003_hospital_latitude_hospital_longitude_and_more'),
+        ('core', '0002_add_missing_fields'),
     ]
 
     operations = [

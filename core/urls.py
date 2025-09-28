@@ -47,4 +47,10 @@ urlpatterns = [
     # JSON APIs
     path('api/hospitals/', views.api_hospitals, name='api_hospitals'),
     path('api/inventory/', views.api_inventory, name='api_inventory'),
+    
+    # Dashboard APIs
+    path('api/dashboard-stats/', views.dashboard_stats_api, name='dashboard_stats_api'),
+    path('api/quick-actions/', views.quick_actions_api, name='quick_actions_api'),
+    path('api/blood-inventory/', views.blood_inventory_summary, name='blood_inventory_summary'),
+    path('api/emergency-alerts/', views.emergency_alerts, name='emergency_alerts'),
 ]
