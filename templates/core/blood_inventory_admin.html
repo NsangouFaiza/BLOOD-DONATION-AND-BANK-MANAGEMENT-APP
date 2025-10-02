@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blood Inventory - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .inventory-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .blood-type-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .blood-type-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+    }
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .status-good { background: #e8f5e8; color: #2e7d32; }
+    .status-moderate { background: #e3f2fd; color: #1565c0; }
+    .status-low_stock { background: #fff3e0; color: #ef6c00; }
+    .status-out_of_stock { background: #ffebee; color: #c62828; }
+    .quantity-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+    .quantity-label {
+        font-weight: 500;
+        color: #555;
+    }
+    .quantity-value {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+    .ready-units { color: #2e7d32; }
+    .testing-units { color: #1565c0; }
+    .reserved-units { color: #ef6c00; }
+    .used-units { color: #757575; }
+    .expired-units { color: #c62828; }
+    .rejected-units { color: #d32f2f; }
+    .summary-stats {
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    .stat-item {
+        text-align: center;
+        padding: 15px;
+    }
+    .stat-number {
+        font-size: 2em;
+        font-weight: bold;
+        color: #1976d2;
+    }
+    .stat-label {
+        color: #666;
+        font-size: 0.9em;
+        text-transform: uppercase;
+    }
+    .alert-section {
+        margin-bottom: 30px;
+    }
+    .recent-activity {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tint"></i> Blood Inventory Management</h2>
+                <div class="text-muted">
+                    Last Updated: {{ "now"|date:"M d, Y H:i" }}
+                </div>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="summary-stats">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ total_units }}</div>
+                            <div class="stat-label">Total Active Units</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-success">
+                                {% for item in inventory_data %}{{ item.ready }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                            </div>
+                            <div class="stat-label">Ready for Use</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-info">
+                                {% for item in inventory_data %}{{ item.testing }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                            </div>
+                            <div class="stat-label">Under Testing</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-warning">{{ low_stock_types|length }}</div>
+                            <div class="stat-label">Low Stock Alerts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Alerts -->
+            {% if low_stock_types %}
+            <div class="alert-section">
+                <div class="alert alert-warning">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Low Stock Alerts</h5>
+                    <div class="row">
+                        {% for alert in low_stock_types %}
+                        <div class="col-md-3">
+                            <strong>{{ alert.blood_type }}</strong>: 
+                            {% if alert.ready == 0 %}
+                                <span class="text-danger">OUT OF STOCK</span>
+                            {% else %}
+                                <span class="text-warning">{{ alert.ready }} units remaining</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Blood Type Inventory -->
+            <div class="row">
+                {% for item in inventory_data %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="inventory-card">
+                        <div class="blood-type-header">
+                            <div class="blood-type-title">{{ item.display_name }}</div>
+                            <span class="status-badge status-{{ item.status }}">{{ item.status|title|replace:"_":" " }}</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label">Ready for Use:</span>
+                            <span class="quantity-value ready-units">{{ item.ready }} units</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label">Under Testing:</span>
+                            <span class="quantity-value testing-units">{{ item.testing }} units</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label">Reserved:</span>
+                            <span class="quantity-value reserved-units">{{ item.reserved }} units</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label">Used:</span>
+                            <span class="quantity-value used-units">{{ item.used }} units</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label">Expired:</span>
+                            <span class="quantity-value expired-units">{{ item.expired }} units</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label">Rejected:</span>
+                            <span class="quantity-value rejected-units">{{ item.rejected }} units</span>
+                        </div>
+
+                        <hr>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label"><strong>Total Volume (Ready):</strong></span>
+                            <span class="quantity-value">{{ item.ready_ml|floatformat:0 }} ml</span>
+                        </div>
+
+                        <div class="quantity-display">
+                            <span class="quantity-label"><strong>Total Volume (All):</strong></span>
+                            <span class="quantity-value">{{ item.total_ml|floatformat:0 }} ml</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="recent-activity">
+                        <h4><i class="fas fa-clock"></i> Recent Collections (Last 7 Days)</h4>
+                        {% if recent_collections %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Unit ID</th>
+                                        <th>Blood Type</th>
+                                        <th>Collection Date</th>
+                                        <th>Status</th>
+                                        <th>Quantity</th>
+                                        <th>Donor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for unit in recent_collections %}
+                                    <tr>
+                                        <td><code>{{ unit.unit_id|truncatechars:8 }}</code></td>
+                                        <td><strong>{{ unit.blood_type }}</strong></td>
+                                        <td>{{ unit.collection_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if unit.status == 'ready' %}success{% elif unit.status == 'testing' %}info{% elif unit.status == 'expired' %}danger{% else %}secondary{% endif %}">
+                                                {{ unit.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ unit.quantity_ml }} ml</td>
+                                        <td>
+                                            {% if unit.donor %}
+                                                {{ unit.donor.user.get_full_name|default:unit.donor.user.username }}
+                                            {% else %}
+                                                <em class="text-muted">Unknown</em>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No recent collections in the last 7 days.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-refresh page every 5 minutes to show updated inventory
+    setTimeout(function() {
+        location.reload();
+    }, 300000); // 5 minutes
+
+    // Add tooltips for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

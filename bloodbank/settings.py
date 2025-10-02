@@ -37,7 +37,6 @@ ADMIN_SITE_TITLE = "LifeLink Admin Portal"
 ADMIN_INDEX_TITLE = "Welcome to LifeLink Administration"
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

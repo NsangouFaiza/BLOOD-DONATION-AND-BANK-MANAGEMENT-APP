@@ -8,7 +8,6 @@ class User(AbstractUser):
     USER_TYPES = [
         ('donor', 'Donor'),
         ('patient', 'Patient'),
-        ('staff', 'Blood Bank Staff'),
         ('lab_tech', 'Lab Technician'),
         ('admin', 'Administrator'),
     ]

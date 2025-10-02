@@ -16,7 +16,6 @@ urlpatterns = [
     # Dashboard URLs
     path('donor-dashboard/', views.donor_dashboard, name='donor_dashboard'),
     path('patient-dashboard/', views.patient_dashboard, name='patient_dashboard'),
-    path('staff-dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('lab-tech-dashboard/', views.lab_tech_dashboard, name='lab_tech_dashboard'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     
@@ -27,9 +26,10 @@ urlpatterns = [
     path('request-blood/', views.request_blood, name='request_blood'),
     path('view-donors/', views.view_donors, name='view_donors'),
     
-    # Staff functionality
-    path('view-blood-inventory/', views.view_blood_inventory, name='view_blood_inventory'),
-    path('manage-appointments/', views.manage_appointments, name='manage_appointments'),
+    # Admin functionality
+    path('manage-users/', views.manage_users, name='manage_users'),
+    path('blood-inventory-admin/', views.blood_inventory_admin, name='blood_inventory_admin'),
+    path('appointments-admin/', views.appointments_admin, name='appointments_admin'),
     
     # Lab technician functionality
     path('record-blood-test/', views.record_blood_test, name='record_blood_test'),
